@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-01T00:00:00+08:00",
+  "sources": [
+    {
+      "id": "xinren",
+      "name": "來玩聚－新仁店",
+      "facebook_url": "https://www.facebook.com/profile.php?id=61592608151415&locale=zh_TW"
+    },
+    {
+      "id": "far_east",
+      "name": "台南遠百",
+      "facebook_url": "https://www.facebook.com/profile.php?id=100057043616291&locale=zh_TW"
+    },
+    {
+      "id": "nanshan",
+      "name": "台南南紡",
+      "facebook_url": "https://www.facebook.com/profile.php?id=100063915310584&locale=zh_TW"
+    },
+    {
+      "id": "xintiandi",
+      "name": "台南新天地",
+      "facebook_url": "https://www.facebook.com/profile.php?id=100057108474044&locale=zh_TW"
+    },
+    {
+      "id": "mitsui",
+      "name": "Funbox 台南三井",
+      "facebook_url": "https://www.facebook.com/p/Funbox-%E5%8F%B0%E5%8D%97%E4%B8%89%E4%BA%95-61591963333031/"
+    }
+  ]
+}
