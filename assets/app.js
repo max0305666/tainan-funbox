@@ -1,85 +1,93 @@
-let DATA=null, selectedShop="all", running=false, queue=[], index=0;
+let DATA = null;
+let selectedShop = "all";
+let running = false;
+let queue = [];
+let index = 0;
+
+
+/* =========================
+   讀取資料
+========================= */
 
 async function loadData(){
+
   try{
-    const r=await fetch("data/shops.json",{cache:"no-store"});
-    DATA=await r.json();
+
+    const r = await fetch("data/shops.json", {
+      cache: "no-store"
+    });
+
+    if(!r.ok){
+      throw new Error("shops.json 讀取失敗");
+    }
+
+    DATA = await r.json();
+
   }catch(e){
-    document.querySelector("#lastSync").textContent="資料讀取失敗";
+
+    console.error(e);
+
+    const sync = document.querySelector("#lastSync");
+
+    if(sync){
+      sync.textContent = "資料讀取失敗";
+    }
+
+    const posts = document.querySelector("#posts");
+
+    if(posts){
+      posts.innerHTML = `
+        <p class="muted">
+          無法讀取店家資料，請稍後重新整理。
+        </p>
+      `;
+    }
+
     return;
   }
+
+
+  /* 防止 posts 不存在造成錯誤 */
+
+  if(!Array.isArray(DATA.posts)){
+    DATA.posts = [];
+  }
+
 
   renderPosts();
   renderShops();
   renderItems();
-  setupPostModal();
 
-  document.querySelector("#lastSync").textContent=
-    "同步 "+(DATA.updatedAt||"尚未設定");
+
+  const sync = document.querySelector("#lastSync");
+
+  if(sync){
+    sync.textContent =
+      "同步 " + (DATA.updatedAt || "尚未設定");
+  }
+
+
+  setupPostModal();
 }
 
 
 /* =========================
-   店家公告
+   Facebook / 最新貼文
 ========================= */
 
 function renderPosts(){
 
-  const posts = DATA.posts || [];
+  const container = document.querySelector("#posts");
 
-  if(posts.length){
-
-    document.querySelector("#posts").innerHTML =
-      posts
-      .slice()
-      .reverse()
-      .map(p=>`
-        <article class="post">
-
-          <div class="post-head">
-            <strong>${esc(p.shop||"店家公告")}</strong>
-            ${p.date ? `<span class="badge">${esc(p.date)}</span>` : ""}
-          </div>
-
-          <div class="post-content">
-            ${esc(p.content||"")}
-          </div>
-
-          ${p.image ? `
-            <img
-              class="post-image"
-              src="${escAttr(p.image)}"
-              alt="${escAttr(p.shop||"店家貼文")}"
-              loading="lazy"
-            >
-          ` : ""}
-
-          ${p.url ? `
-            <a
-              class="facebook-link"
-              href="${escAttr(p.url)}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              在 Facebook 查看原文 →
-            </a>
-          ` : ""}
-
-        </article>
-      `)
-      .join("");
-
-    return;
-  }
+  if(!container) return;
 
 
-  /*
-    如果目前還沒有 posts，
-    保留原本店家品項公告的顯示方式
-  */
+  /* 如果目前沒有手動貼文 */
 
-  document.querySelector("#posts").innerHTML =
-    DATA.shops.map(s=>`
+  if(!DATA.posts.length){
+
+    container.innerHTML = DATA.shops.map(s => `
+
       <article class="post">
 
         <div class="post-head">
@@ -91,15 +99,89 @@ function renderPosts(){
         </div>
 
         <div class="post-items">
-          ${s.items.slice(0,4)
-            .map(x=>esc(x.name))
-            .join("　·　")}
-          ${s.items.length>4?"　…":""}
+          ${
+            s.items
+              .slice(0,4)
+              .map(x => esc(x.name))
+              .join("　·　")
+          }
+
+          ${s.items.length > 4 ? "　…" : ""}
         </div>
 
       </article>
-    `)
-    .join("");
+
+    `).join("");
+
+    return;
+  }
+
+
+  /* 顯示真正的 Facebook 貼文 */
+
+  container.innerHTML = DATA.posts
+    .slice()
+    .reverse()
+    .map(post => `
+
+      <article class="post">
+
+        <div class="post-head">
+
+          <strong>
+            ${esc(post.shop || "店家")}
+          </strong>
+
+          <span class="badge">
+            ${esc(post.date || "")}
+          </span>
+
+        </div>
+
+
+        ${
+          post.content
+            ? `
+              <div class="post-content">
+                ${esc(post.content)}
+              </div>
+            `
+            : ""
+        }
+
+
+        ${
+          post.image
+            ? `
+              <img
+                class="post-image"
+                src="${escAttr(post.image)}"
+                alt="Facebook 貼文圖片"
+                loading="lazy"
+              >
+            `
+            : ""
+        }
+
+
+        ${
+          post.url
+            ? `
+              <a
+                class="facebook-link"
+                href="${escAttr(post.url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                查看 Facebook 原文 →
+              </a>
+            `
+            : ""
+        }
+
+      </article>
+
+    `).join("");
 }
 
 
@@ -109,57 +191,92 @@ function renderPosts(){
 
 function renderShops(){
 
-  const html=[
-    `<button
-      class="shop-btn ${selectedShop==="all"?"active":""}"
+  const container = document.querySelector("#shops");
+
+  if(!container) return;
+
+
+  const html = [
+
+    `
+    <button
+      class="shop-btn ${selectedShop === "all" ? "active" : ""}"
       onclick="chooseShop('all')"
     >
       <strong>全部店家</strong>
       <small>顯示全部抽選品</small>
-    </button>`
-  ]
-  .concat(
-    DATA.shops.map((s,i)=>`
+    </button>
+    `
+
+  ].concat(
+
+    DATA.shops.map((s,i) => `
+
       <button
-        class="shop-btn ${selectedShop===i?"active":""}"
+        class="shop-btn ${selectedShop === i ? "active" : ""}"
         onclick="chooseShop(${i})"
       >
-        <strong>${esc(s.name)}</strong>
-        <small>${s.items.length} 個品項</small>
+
+        <strong>
+          ${esc(s.name)}
+        </strong>
+
+        <small>
+          ${s.items.length} 個品項
+        </small>
+
       </button>
+
     `)
+
   );
 
-  document.querySelector("#shops").innerHTML=html.join("");
+
+  container.innerHTML = html.join("");
 }
 
 
+/* =========================
+   選擇店家
+========================= */
+
 function chooseShop(i){
-  selectedShop=i;
+
+  selectedShop = i;
+
   renderShops();
   renderItems();
 }
 
 
 /* =========================
-   抽選品項
+   品項
 ========================= */
 
 function renderItems(){
 
-  let list=[];
+  const container = document.querySelector("#items");
 
-  DATA.shops.forEach((s,si)=>{
+  if(!container) return;
 
-    if(selectedShop==="all"||selectedShop===si){
 
-      s.items.forEach((x,ii)=>{
+  let list = [];
+
+
+  DATA.shops.forEach((s,si) => {
+
+    if(
+      selectedShop === "all" ||
+      selectedShop === si
+    ){
+
+      s.items.forEach((x,ii) => {
 
         list.push({
           ...x,
           si,
           ii,
-          shop:s.name
+          shop: s.name
         });
 
       });
@@ -169,51 +286,53 @@ function renderItems(){
   });
 
 
-  document.querySelector("#items").innerHTML=
+  if(!list.length){
 
-    list.length
+    container.innerHTML = `
+      <p class="muted">
+        目前沒有抽選品項。
+      </p>
+    `;
 
-    ?
+    return;
+  }
 
-    list.map((x,k)=>`
 
-      <label class="item">
+  container.innerHTML = list.map((x,k) => `
 
-        <input
-          type="checkbox"
-          class="item-check"
-          data-k="${k}"
-          checked
-        >
+    <label class="item">
 
-        <span class="item-main">
+      <input
+        type="checkbox"
+        class="item-check"
+        data-k="${k}"
+        checked
+      >
 
-          <span class="item-name">
-            ${esc(x.name)}
-          </span>
+      <span class="item-main">
 
-          <span class="item-shop">
-            ${esc(x.shop)}
-          </span>
-
+        <span class="item-name">
+          ${esc(x.name)}
         </span>
 
-        <a
-          class="line-link"
-          href="${escAttr(x.url)}"
-          target="_blank"
-          rel="noopener"
-        >
-          LINE
-        </a>
+        <span class="item-shop">
+          ${esc(x.shop)}
+        </span>
 
-      </label>
+      </span>
 
-    `).join("")
+      <a
+        class="line-link"
+        href="${escAttr(x.url)}"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        LINE
+      </a>
 
-    :
+    </label>
 
-    `<p class="muted">目前沒有抽選品項。</p>`;
+  `).join("");
 }
 
 
@@ -221,40 +340,73 @@ function renderItems(){
    全選
 ========================= */
 
-document.querySelector("#selectAll").onclick=()=>{
+const selectAll =
+  document.querySelector("#selectAll");
 
-  document
-    .querySelectorAll(".item-check")
-    .forEach(x=>x.checked=true);
+if(selectAll){
 
-};
+  selectAll.onclick = () => {
+
+    document
+      .querySelectorAll(".item-check")
+      .forEach(x => {
+        x.checked = true;
+      });
+
+  };
+
+}
 
 
 /* =========================
-   自動抽選
+   開始 / 停止
 ========================= */
 
-document.querySelector("#start").onclick=start;
+const startBtn =
+  document.querySelector("#start");
 
-document.querySelector("#stop").onclick=()=>{
-  running=false;
-  setStatus("已停止");
-};
+if(startBtn){
+  startBtn.onclick = start;
+}
 
+
+const stopBtn =
+  document.querySelector("#stop");
+
+if(stopBtn){
+
+  stopBtn.onclick = () => {
+
+    running = false;
+
+    setStatus("已停止");
+
+  };
+
+}
+
+
+/* =========================
+   開始抽選
+========================= */
 
 function start(){
 
-  const list=[];
+  const list = [];
 
-  DATA.shops.forEach((s,si)=>{
 
-    if(selectedShop==="all"||selectedShop===si){
+  DATA.shops.forEach((s,si) => {
 
-      s.items.forEach((x,ii)=>{
+    if(
+      selectedShop === "all" ||
+      selectedShop === si
+    ){
+
+      s.items.forEach((x,ii) => {
 
         list.push({
           ...x,
-          shop:s.name,
+          shop: s.name,
           si,
           ii
         });
@@ -266,63 +418,99 @@ function start(){
   });
 
 
-  const checks=[
+  const checks = [
     ...document.querySelectorAll(".item-check")
   ];
 
-  queue=list.filter((_,i)=>checks[i]?.checked);
+
+  queue = list.filter(
+    (_,i) => checks[i]?.checked
+  );
 
 
   if(!queue.length){
 
     alert("請至少選擇一個品項");
-    return;
 
+    return;
   }
 
 
-  running=true;
-  index=0;
+  running = true;
+  index = 0;
 
   document.body.classList.add("running");
 
   next();
-
 }
 
 
+/* =========================
+   下一個
+========================= */
+
 function next(){
 
-  if(!running)return;
+  if(!running) return;
 
-  if(index>=queue.length){
 
-    running=false;
+  if(index >= queue.length){
+
+    running = false;
 
     setStatus("全部項目已依序開啟");
 
-    document.querySelector("#current").textContent="完成";
+    const current =
+      document.querySelector("#current");
+
+    if(current){
+      current.textContent = "完成";
+    }
 
     return;
+  }
+
+
+  const x = queue[index];
+
+
+  const progress =
+    document.querySelector("#progress");
+
+  if(progress){
+
+    progress.textContent =
+      `${index + 1} / ${queue.length}`;
 
   }
 
 
-  const x=queue[index];
+  const current =
+    document.querySelector("#current");
 
-  document.querySelector("#progress").textContent=
-    `${index+1} / ${queue.length}`;
+  if(current){
 
-  document.querySelector("#current").textContent=x.name;
+    current.textContent = x.name;
+
+  }
+
 
   setStatus(`準備開啟 ${x.shop}`);
 
-  window.open(x.url,"_blank");
+
+  window.open(
+    x.url,
+    "_blank"
+  );
+
 
   index++;
 
-  setTimeout(next,8000);
 
+  setTimeout(
+    next,
+    8000
+  );
 }
 
 
@@ -332,135 +520,221 @@ function next(){
 
 function setStatus(t){
 
-  document.querySelector("#status").innerHTML=
-    `<span class="dot"></span>${esc(t)}`;
+  const status =
+    document.querySelector("#status");
 
+  if(!status) return;
+
+
+  status.innerHTML =
+    `<span class="dot"></span>${esc(t)}`;
 }
 
 
 /* =========================
-   新增貼文
+   新增貼文視窗
 ========================= */
 
 function setupPostModal(){
 
-  const modal=document.querySelector("#postModal");
-  const openBtn=document.querySelector("#addPostBtn");
-  const closeBtn=document.querySelector("#closePostModal");
-  const cancelBtn=document.querySelector("#cancelPost");
-  const backdrop=document.querySelector("#modalBackdrop");
-  const form=document.querySelector("#postForm");
-  const shopSelect=document.querySelector("#postShop");
+  const modal =
+    document.querySelector("#postModal");
+
+  const openBtn =
+    document.querySelector("#addPostBtn");
+
+  const closeBtn =
+    document.querySelector("#closePostModal");
+
+  const cancelBtn =
+    document.querySelector("#cancelPost");
+
+  const backdrop =
+    document.querySelector("#modalBackdrop");
+
+  const form =
+    document.querySelector("#postForm");
+
+  const shopSelect =
+    document.querySelector("#postShop");
 
 
-  if(!modal||!openBtn||!form)return;
+  if(!modal || !openBtn || !form){
+
+    console.warn(
+      "找不到新增貼文視窗元件"
+    );
+
+    return;
+  }
 
 
-  /*
-    把現有店家放進下拉選單
-  */
+  /* 填入店家 */
 
-  shopSelect.innerHTML=
-    `<option value="">請選擇店家</option>`+
-    DATA.shops
-      .map((s,i)=>
-        `<option value="${i}">
-          ${esc(s.name)}
-        </option>`
-      )
-      .join("");
+  if(shopSelect){
 
+    shopSelect.innerHTML = `
 
-  function openModal(){
+      <option value="">
+        請選擇店家
+      </option>
 
-    modal.classList.add("show");
-    modal.setAttribute("aria-hidden","false");
+      ${
+        DATA.shops.map((shop,index) => `
+          <option value="${index}">
+            ${esc(shop.name)}
+          </option>
+        `).join("")
+      }
+
+    `;
 
   }
 
+
+  /* 開啟 */
+
+  openBtn.onclick = () => {
+
+    modal.classList.add("show");
+
+  };
+
+
+  /* 關閉 */
 
   function closeModal(){
 
     modal.classList.remove("show");
-    modal.setAttribute("aria-hidden","true");
-
-    form.reset();
 
   }
 
 
-  openBtn.onclick=openModal;
-  closeBtn.onclick=closeModal;
-  cancelBtn.onclick=closeModal;
-  backdrop.onclick=closeModal;
+  if(closeBtn){
+    closeBtn.onclick = closeModal;
+  }
 
 
-  /*
-    新增貼文
-  */
+  if(cancelBtn){
+    cancelBtn.onclick = closeModal;
+  }
 
-  form.onsubmit=(e)=>{
+
+  if(backdrop){
+    backdrop.onclick = closeModal;
+  }
+
+
+  /* ESC 關閉 */
+
+  document.addEventListener(
+    "keydown",
+    e => {
+
+      if(
+        e.key === "Escape" &&
+        modal.classList.contains("show")
+      ){
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+
+  /* 提交 */
+
+  form.onsubmit = e => {
 
     e.preventDefault();
 
 
-    const shopIndex=Number(shopSelect.value);
+    const shopIndex =
+      shopSelect.value;
 
-    if(!Number.isInteger(shopIndex)||!DATA.shops[shopIndex]){
+
+    const url =
+      document
+        .querySelector("#postUrl")
+        .value
+        .trim();
+
+
+    const content =
+      document
+        .querySelector("#postContent")
+        .value
+        .trim();
+
+
+    const image =
+      document
+        .querySelector("#postImage")
+        .value
+        .trim();
+
+
+    if(shopIndex === ""){
 
       alert("請選擇店家");
-      return;
 
+      return;
     }
 
 
-    const content=
-      document.querySelector("#postContent").value.trim();
+    if(!url){
+
+      alert("請輸入 Facebook 貼文網址");
+
+      return;
+    }
+
 
     if(!content){
 
       alert("請輸入貼文內容");
-      return;
 
+      return;
     }
 
 
-    const post={
+    const newPost = {
 
-      shop:DATA.shops[shopIndex].name,
+      shop:
+        DATA.shops[
+          Number(shopIndex)
+        ].name,
 
-      url:
-        document.querySelector("#postUrl").value.trim(),
+      url: url,
 
-      content:content,
+      content: content,
 
-      image:
-        document.querySelector("#postImage").value.trim(),
+      image: image,
 
       date:
-        new Date().toLocaleDateString("zh-TW")
+        new Date()
+          .toLocaleDateString("zh-TW")
 
     };
 
 
-    /*
-      暫時先加入目前頁面資料。
-      下一步會接 GitHub API，
-      讓資料真正永久保存。
-    */
+    DATA.posts.push(newPost);
 
-    if(!DATA.posts){
-      DATA.posts=[];
-    }
-
-
-    DATA.posts.push(post);
 
     renderPosts();
 
+
+    form.reset();
+
+
     closeModal();
 
-    alert("貼文已新增！");
+
+    alert(
+      "貼文已新增！\n\n目前只是暫存在這個瀏覽器頁面，重新整理後會消失。"
+    );
 
   };
 
@@ -468,28 +742,35 @@ function setupPostModal(){
 
 
 /* =========================
-   安全文字處理
+   HTML 安全處理
 ========================= */
 
 function esc(s){
 
-  return String(s??"").replace(
-    /[&<>"']/g,
-    c=>({
-      "&":"&amp;",
-      "<":"&lt;",
-      ">":"&gt;",
-      '"':"&quot;",
-      "'":"&#39;"
-    }[c])
-  );
+  return String(s ?? "")
+    .replace(
+      /[&<>"']/g,
+      c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+      }[c])
+    );
 
 }
 
 
 function escAttr(s){
+
   return esc(s);
+
 }
 
+
+/* =========================
+   啟動
+========================= */
 
 loadData();
