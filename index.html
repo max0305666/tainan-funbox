@@ -20,7 +20,6 @@
         <p>最新店家公告、抽選品項與 LINE 連結集中管理</p>
       </div>
 
-      <!-- 新增貼文按鈕 -->
       <button id="addPostBtn" class="add-post-btn">
         ＋ 新增貼文
       </button>
@@ -28,6 +27,7 @@
 
   </div>
 </header>
+
 
 <main>
 
@@ -74,6 +74,7 @@
 <section class="control card">
 
   <div class="progress-row">
+
     <div>
       <span class="muted">目前進度</span>
       <strong id="progress">0 / 0</strong>
@@ -83,15 +84,22 @@
       <span class="muted">目前項目</span>
       <strong id="current">尚未開始</strong>
     </div>
+
   </div>
 
   <div class="status" id="status">
-    <span class="dot"></span>待機中
+    <span class="dot"></span>
+    待機中
   </div>
 
   <div class="actions">
-    <button id="start" class="primary">▶ 開始自動抽選</button>
-    <button id="stop" class="secondary">■ 停止</button>
+    <button id="start" class="primary">
+      ▶ 開始自動抽選
+    </button>
+
+    <button id="stop" class="secondary">
+      ■ 停止
+    </button>
   </div>
 
   <p class="hint">
@@ -108,30 +116,34 @@
 </footer>
 
 
-<!-- ========================= -->
-<!-- 新增貼文視窗 -->
-<!-- ========================= -->
+<!-- =========================
+     新增貼文視窗
+========================= -->
 
-<div id="postModal" class="modal" aria-hidden="true">
+<div id="postModal" class="modal">
 
-  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div id="modalBackdrop" class="modal-backdrop"></div>
 
   <div class="modal-box">
 
     <div class="modal-header">
+
       <div>
         <span class="kicker">NEW POST</span>
-        <h2>新增店家貼文</h2>
+        <h2>新增 Facebook 貼文</h2>
       </div>
 
-      <button id="closePostModal" class="modal-close">×</button>
+      <button id="closePostModal" class="modal-close">
+        ×
+      </button>
+
     </div>
 
 
     <form id="postForm">
 
       <label>
-        <span>店家</span>
+        <span>選擇店家</span>
 
         <select id="postShop" required>
           <option value="">請選擇店家</option>
@@ -146,6 +158,7 @@
           id="postUrl"
           type="url"
           placeholder="https://www.facebook.com/..."
+          required
         >
       </label>
 
@@ -155,15 +168,14 @@
 
         <textarea
           id="postContent"
-          rows="6"
-          placeholder="輸入店家的 Facebook 貼文內容..."
+          placeholder="把 Facebook 貼文內容貼在這裡..."
           required
         ></textarea>
       </label>
 
 
       <label>
-        <span>圖片網址（選填）</span>
+        <span>圖片網址（可選）</span>
 
         <input
           id="postImage"
@@ -174,13 +186,22 @@
 
 
       <div class="modal-actions">
-        <button type="button" id="cancelPost" class="secondary">
+
+        <button
+          type="button"
+          id="cancelPost"
+          class="secondary"
+        >
           取消
         </button>
 
-        <button type="submit" class="primary">
-          ＋ 新增貼文
+        <button
+          type="submit"
+          class="primary"
+        >
+          新增貼文
         </button>
+
       </div>
 
     </form>
