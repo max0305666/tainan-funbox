@@ -76,13 +76,34 @@
       "facebook": "https://www.facebook.com/p/Funbox-%E5%8F%B0%E5%8D%97%E4%B8%89%E4%BA%95-61591963333031/",
       "items": []
     },
+   {
+  "id": "far_east",
+  "name": "Funbox台南遠百",
+  "address": "",
+  "facebook": "https://www.facebook.com/profile.php?id=100063915310584&locale=zh_TW",
+  "items": [
     {
-      "id": "far_east",
-      "name": "台南遠百",
-      "address": "",
-      "facebook": "https://www.facebook.com/profile.php?id=100057043616291&locale=zh_TW",
-      "items": []
+      "name": "CX-16 極限衝擊對戰組C",
+      "url": "https://lin.ee/nn7LsJi"
     },
+    {
+      "name": "UX-16 時鐘幻象 隨機強化組",
+      "url": "https://lin.ee/SrKwaD2"
+    },
+    {
+      "name": "CX-13 龍王閃擊",
+      "url": "https://lin.ee/VHv7T6A"
+    },
+    {
+      "name": "UX-19 子彈獅鷲H",
+      "url": "https://lin.ee/rffUFM4"
+    },
+    {
+      "name": "UX-20 榮耀武神LF",
+      "url": "https://lin.ee/TzucQoK"
+    }
+  ]
+},
     {
   "id": "nanfang",
   "name": "UNBOX-台南南紡店",
