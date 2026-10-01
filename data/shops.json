@@ -69,13 +69,38 @@
         }
       ]
     },
+{
+  "id": "mitsui",
+  "name": "Funbox台南三井",
+  "address": "",
+  "facebook": "https://www.facebook.com/profile.php?id=61591963333031&locale=zh_TW",
+  "items": [
     {
-      "id": "mitsui",
-      "name": "Funbox 台南三井",
-      "address": "",
-      "facebook": "https://www.facebook.com/p/Funbox-%E5%8F%B0%E5%8D%97%E4%B8%89%E4%BA%95-61591963333031/",
-      "items": []
+      "name": "CX-01 蒼龍勇氣",
+      "url": "https://lin.ee/74ZUulf"
     },
+    {
+      "name": "CX-14 騎士堡壘",
+      "url": "https://lin.ee/xlly916"
+    },
+    {
+      "name": "UX-14 天蠍長矛",
+      "url": "https://lin.ee/X2Wx0Wo"
+    },
+    {
+      "name": "CX-16 極限衝擊對戰組",
+      "url": "https://lin.ee/znGXrvJo"
+    },
+    {
+      "name": "CX-05 隨機強化組",
+      "url": "https://lin.ee/5o5s6YF"
+    },
+    {
+      "name": "CX-17 隨機強化組",
+      "url": "https://lin.ee/v6bs9GR"
+    }
+  ]
+},
    {
   "id": "far_east",
   "name": "Funbox台南遠百",
@@ -106,7 +131,7 @@
 },
     {
   "id": "nanfang",
-  "name": "UNBOX-台南南紡店",
+  "name": "FUNBOX-台南南紡店",
   "address": "台南市東區中華東路一段366號A1館4樓",
   "facebook": "https://www.facebook.com/profile.php?id=100057043616291",
   "items": [
