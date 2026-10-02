@@ -1,11 +1,7 @@
 let DATA = null;
-
 let selectedShop = "all";
-
 let running = false;
-
 let queue = [];
-
 let index = 0;
 
 
@@ -28,6 +24,8 @@ async function loadData() {
 
   } catch (e) {
 
+    console.error("shops.json 讀取失敗：", e);
+
     document.querySelector("#lastSync").textContent =
       "資料讀取失敗";
 
@@ -36,23 +34,19 @@ async function loadData() {
 
 
   renderPosts();
-
   renderShops();
-
   renderItems();
 
 
   document.querySelector("#lastSync").textContent =
     "同步 " + (DATA.updatedAt || "尚未設定");
 
-
-  updateButtons();
 }
 
 
 
 /* =========================
-   最新公告
+   最新店家公告
 ========================= */
 
 function renderPosts() {
@@ -101,7 +95,7 @@ function renderPosts() {
 
 
 /* =========================
-   店家
+   店家選擇
 ========================= */
 
 function renderShops() {
@@ -160,21 +154,14 @@ function renderShops() {
 
 
 /* =========================
-   選擇店家
+   切換店家
 ========================= */
 
 function chooseShop(i) {
 
-  /*
-    抽選進行中時不允許切換店家，
-    避免抽選順序跑掉。
-  */
-
   if (running) {
 
-    alert(
-      "目前正在抽選中，請先按「停止」。"
-    );
+    alert("目前正在抽選中，請先按「停止」。");
 
     return;
   }
@@ -191,7 +178,7 @@ function chooseShop(i) {
 
 
 /* =========================
-   商品列表
+   顯示商品
 ========================= */
 
 function renderItems() {
@@ -209,15 +196,10 @@ function renderItems() {
       s.items.forEach((x, ii) => {
 
         list.push({
-
           ...x,
-
-          si: si,
-
-          ii: ii,
-
+          si,
+          ii,
           shop: s.name
-
         });
 
       });
@@ -229,13 +211,8 @@ function renderItems() {
 
   if (!list.length) {
 
-    document.querySelector("#items").innerHTML = `
-
-      <p class="muted">
-        目前沒有抽選品項。
-      </p>
-
-    `;
+    document.querySelector("#items").innerHTML =
+      `<p class="muted">目前沒有抽選品項。</p>`;
 
     return;
   }
@@ -315,16 +292,14 @@ function start() {
 
   if (!DATA) {
 
-    alert(
-      "資料尚未載入完成，請稍候再試。"
-    );
+    alert("資料尚未載入完成");
 
     return;
   }
 
 
   /*
-    建立目前店家 / 全部店家的商品清單
+    建立目前店家的商品清單
   */
 
   const list = [];
@@ -340,15 +315,10 @@ function start() {
       s.items.forEach((x, ii) => {
 
         list.push({
-
           ...x,
-
           shop: s.name,
-
-          si: si,
-
-          ii: ii
-
+          si,
+          ii
         });
 
       });
@@ -359,15 +329,11 @@ function start() {
 
 
   /*
-    取得使用者勾選的商品
+    取得勾選狀態
   */
 
   const checks = [
-
-    ...document.querySelectorAll(
-      ".item-check"
-    )
-
+    ...document.querySelectorAll(".item-check")
   ];
 
 
@@ -382,29 +348,26 @@ function start() {
 
   if (!queue.length) {
 
-    alert(
-      "請至少選擇一個品項。"
-    );
+    alert("請至少選擇一個品項");
 
     return;
   }
 
 
   /*
-    開始流程
+    開始
   */
 
   running = true;
 
   index = 0;
 
-
-  document.body.classList.add(
-    "running"
-  );
+  document.body.classList.add("running");
 
 
   /*
+    重點：
+    按「開始抽選」
     直接開第一個 LINE
   */
 
@@ -424,18 +387,15 @@ function start() {
 function openCurrent() {
 
   if (!running) {
-
     return;
   }
 
 
   /*
-    所有商品都完成
+    已經全部完成
   */
 
-  if (
-    index >= queue.length
-  ) {
+  if (index >= queue.length) {
 
     finish();
 
@@ -443,38 +403,31 @@ function openCurrent() {
   }
 
 
-  const item =
-    queue[index];
+  const x = queue[index];
 
 
   /*
-    更新進度
+    顯示進度
   */
 
-  document.querySelector(
-    "#progress"
-  ).textContent =
-
+  document.querySelector("#progress").textContent =
     `${index + 1} / ${queue.length}`;
 
 
   /*
-    更新目前商品
+    顯示目前商品
   */
 
-  document.querySelector(
-    "#current"
-  ).textContent =
-
-    item.name;
+  document.querySelector("#current").textContent =
+    x.name;
 
 
   /*
-    更新狀態
+    顯示狀態
   */
 
   setStatus(
-    `正在抽選：${item.name}`
+    `第 ${index + 1} 項：${x.name}`
   );
 
 
@@ -483,7 +436,7 @@ function openCurrent() {
   */
 
   window.open(
-    item.url,
+    x.url,
     "_blank"
   );
 
@@ -504,25 +457,22 @@ document.querySelector("#next").onclick = next;
 function next() {
 
   if (!running) {
-
     return;
   }
 
 
   /*
-    下一個商品
+    索引 +1
   */
 
   index++;
 
 
   /*
-    如果已經沒有下一個
+    如果沒有下一個
   */
 
-  if (
-    index >= queue.length
-  ) {
+  if (index >= queue.length) {
 
     finish();
 
@@ -551,21 +501,13 @@ function stop() {
 
   running = false;
 
-
-  document.body.classList.remove(
-    "running"
-  );
+  document.body.classList.remove("running");
 
 
-  setStatus(
-    "已停止"
-  );
+  setStatus("已停止");
 
 
-  document.querySelector(
-    "#current"
-  ).textContent =
-
+  document.querySelector("#current").textContent =
     "已停止";
 
 
@@ -576,36 +518,25 @@ function stop() {
 
 
 /* =========================
-   全部完成
+   完成
 ========================= */
 
 function finish() {
 
   running = false;
 
-
-  document.body.classList.remove(
-    "running"
-  );
+  document.body.classList.remove("running");
 
 
-  document.querySelector(
-    "#progress"
-  ).textContent =
-
+  document.querySelector("#progress").textContent =
     `${queue.length} / ${queue.length}`;
 
 
-  document.querySelector(
-    "#current"
-  ).textContent =
-
+  document.querySelector("#current").textContent =
     "全部完成";
 
 
-  setStatus(
-    "🎉 全部項目已完成"
-  );
+  setStatus("🎉 全部項目已完成");
 
 
   updateButtons();
@@ -629,7 +560,8 @@ function updateButtons() {
 
 
   /*
-    開始按鈕
+    抽選中：
+    開始按鈕關閉
   */
 
   startButton.disabled =
@@ -637,9 +569,8 @@ function updateButtons() {
 
 
   /*
-    下一個按鈕
-
-    抽選進行中才可以按
+    抽選中：
+    下一個可以按
   */
 
   nextButton.disabled =
@@ -650,47 +581,32 @@ function updateButtons() {
 
 
 /* =========================
-   狀態文字
+   狀態
 ========================= */
 
 function setStatus(text) {
 
-  document.querySelector(
-    "#status"
-  ).innerHTML = `
-
-    <span class="dot"></span>
-
-    ${esc(text)}
-
-  `;
+  document.querySelector("#status").innerHTML =
+    `<span class="dot"></span>${esc(text)}`;
 
 }
 
 
 
 /* =========================
-   HTML 安全處理
+   防止 HTML 注入
 ========================= */
 
 function esc(s) {
 
-  return String(
-    s ?? ""
-  ).replace(
+  return String(s ?? "").replace(
     /[&<>"']/g,
     c => ({
-
       "&": "&amp;",
-
       "<": "&lt;",
-
       ">": "&gt;",
-
       '"': "&quot;",
-
       "'": "&#39;"
-
     }[c])
   );
 
@@ -706,7 +622,7 @@ function escAttr(s) {
 
 
 /* =========================
-   啟動
+   啟動網站
 ========================= */
 
 loadData();
