@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-01",
+  "updatedAt": "2026-10-02",
   "shops": [
     {
       "id": "nanfang",
@@ -76,68 +76,8 @@
       "facebook": "https://www.facebook.com/profile.php?id=100063718945104&locale=zh_TW",
       "items": [
         {
-          "name": "BX-00 蒼龍神劍V2",
+          "name": "1、BX-00 蒼龍神劍V2",
           "url": "https://lin.ee/6ggWc7m"
-        },
-        {
-          "name": "UX-03 魔導神杖",
-          "url": "https://lin.ee/8JVQ8q1"
-        },
-        {
-          "name": "UX-14 天蠍長矛",
-          "url": "https://lin.ee/W88nhNw"
-        },
-        {
-          "name": "UX-15 鮫鯊狂鱗改造組",
-          "url": "https://lin.ee/T62bHYE0"
-        },
-        {
-          "name": "UX-16 時鐘幻象 隨機強化組",
-          "url": "https://lin.ee/rHbtprB"
-        },
-        {
-          "name": "UX-17 隕星龍騎士",
-          "url": "https://lin.ee/9440Imv"
-        },
-        {
-          "name": "UX-19 子彈獅鷲H",
-          "url": "https://lin.ee/tFsfRLq"
-        },
-        {
-          "name": "UX-20 榮耀武神",
-          "url": "https://lin.ee/qDqHmiUr"
-        },
-        {
-          "name": "CX-00 新世紀福音戰士改造組",
-          "url": "https://lin.ee/U9d1Oi7"
-        },
-        {
-          "name": "CX-01 蒼龍勇氣",
-          "url": "https://lin.ee/SN2REBn"
-        },
-        {
-          "name": "CX-05 惡魔獵魂 隨機強化組",
-          "url": "https://lin.ee/pGazo4z"
-        },
-        {
-          "name": "CX-08 魔犬烈焰",
-          "url": "https://lin.ee/ois9YWs"
-        },
-        {
-          "name": "CX-11 帝王威能改造組",
-          "url": "https://lin.ee/YYfZVFW"
-        },
-        {
-          "name": "CX-14 騎士堡壘",
-          "url": "https://lin.ee/U6Mm00A"
-        },
-        {
-          "name": "CX-16 極限衝擊對戰組C",
-          "url": "https://lin.ee/rfbgu4v"
-        },
-        {
-          "name": "CX-17 獨角極變 隨機強化組",
-          "url": "https://lin.ee/y8qX1iY2"
         }
       ]
     },
