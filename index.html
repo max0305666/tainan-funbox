@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -7,46 +8,103 @@
 <title>台南 Funbox 自動抽選</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
+
 <body>
+
 <header class="hero">
   <div class="hero-inner">
     <div class="eyebrow">FUNBOX · TAINAN</div>
     <h1>台南 Funbox<br>自動抽選</h1>
-    <p>最新店家公告、抽選品項與 LINE 連結集中管理</p>
+    <p>選擇店家與抽選品項，依序進行 LINE 抽選</p>
   </div>
 </header>
 
 <main>
-<section class="notice card">
-  <div class="section-title"><div><span class="kicker">LATEST</span><h2>最新店家公告</h2></div><span id="lastSync" class="sync">讀取中…</span></div>
-  <div id="posts"></div>
-</section>
 
+<!-- 選擇店家 -->
 <section class="card">
-  <div class="section-title"><div><span class="kicker">SHOPS</span><h2>選擇店家</h2></div></div>
+  <div class="section-title">
+    <div>
+      <span class="kicker">SHOPS</span>
+      <h2>選擇店家</h2>
+    </div>
+  </div>
+
   <div id="shops" class="shop-grid"></div>
 </section>
 
+
+<!-- 抽選品項 -->
 <section class="card">
-  <div class="section-title"><div><span class="kicker">ITEMS</span><h2>抽選品項</h2></div><button id="selectAll" class="text-btn">全選</button></div>
-  <div id="items"></div>
+  <div class="section-title">
+    <div>
+      <span class="kicker">ITEMS</span>
+      <h2>抽選品項</h2>
+    </div>
+
+    <button id="selectAll" class="text-btn">全選</button>
+  </div>
+
+  <div id="items" class="simple-items"></div>
 </section>
 
+
+<!-- 自動抽選 -->
 <section class="control card">
+
+  <div class="section-title">
+    <div>
+      <span class="kicker">AUTO DRAW</span>
+      <h2>自動抽選</h2>
+    </div>
+  </div>
+
   <div class="progress-row">
-    <div><span class="muted">目前進度</span><strong id="progress">0 / 0</strong></div>
-    <div><span class="muted">目前項目</span><strong id="current">尚未開始</strong></div>
+
+    <div>
+      <span class="muted">目前進度</span>
+      <strong id="progress">0 / 0</strong>
+    </div>
+
+    <div>
+      <span class="muted">目前項目</span>
+      <strong id="current">尚未開始</strong>
+    </div>
+
   </div>
-  <div class="status" id="status"><span class="dot"></span>待機中</div>
+
+  <div class="status" id="status">
+    <span class="dot"></span>
+    待機中
+  </div>
+
   <div class="actions">
-    <button id="start" class="primary">▶ 開始自動抽選</button>
-    <button id="stop" class="secondary">■ 停止</button>
+    <button id="start" class="primary">
+      ▶ 開始自動抽選
+    </button>
+
+    <button id="stop" class="secondary">
+      ■ 停止
+    </button>
   </div>
-  <p class="hint">目前版本會依序開啟 LINE 抽選連結；LINE App 內的按鈕操作需搭配手機端自動化。</p>
+
+  <p class="hint">
+    系統會依序開啟 LINE 抽選連結。
+    LINE App 內的抽選操作需搭配手機端自動化完成。
+  </p>
+
 </section>
+
 </main>
 
-<footer>資料來源可由後端自動同步 Facebook 公告 · GitHub Pages 前端</footer>
+
+<footer>
+  資料來源可由後端自動同步 Facebook 公告 · GitHub Pages 前端
+</footer>
+
+
 <script src="assets/app.js"></script>
+
 </body>
 </html>
+```
