@@ -558,4 +558,202 @@ footer{
     padding:16px 
   } 
  
-}
+} 
+/* ========================= 
+   簡潔版抽選品項 
+========================= */ 
+ 
+.simple-items { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+} 
+ 
+/* 單一品項 */ 
+.simple-items label, 
+.simple-items .item { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+ 
+  padding: 13px 15px; 
+ 
+  background: #f8fafc; 
+  border: 1px solid #e5e7eb; 
+  border-radius: 10px; 
+ 
+  cursor: pointer; 
+ 
+  transition: 
+    background .15s ease, 
+    border-color .15s ease; 
+} 
+ 
+/* 滑鼠移上去 */ 
+.simple-items label:hover, 
+.simple-items .item:hover { 
+  background: #f1f5f9; 
+  border-color: #cbd5e1; 
+} 
+ 
+/* Checkbox */ 
+.simple-items input[type="checkbox"] { 
+  width: 18px; 
+  height: 18px; 
+ 
+  margin: 0; 
+ 
+  cursor: pointer; 
+  accent-color: #111827; 
+} 
+ 
+/* 品項名稱 */ 
+.simple-items label span, 
+.simple-items .item span { 
+  font-size: 15px; 
+  font-weight: 500; 
+  color: #1f2937; 
+ 
+  line-height: 1.4; 
+} 
+ 
+/* 已選取 */ 
+.simple-items label:has(input:checked), 
+.simple-items .item:has(input:checked) { 
+  background: #f1f5f9; 
+  border-color: #94a3b8; 
+} 
+ 
+ 
+/* ========================= 
+   自動抽選區塊 
+========================= */ 
+ 
+.control.card { 
+  margin-top: 20px; 
+} 
+ 
+.control .section-title { 
+  margin-bottom: 18px; 
+} 
+ 
+ 
+/* 進度資訊 */ 
+.progress-row { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 12px; 
+  margin-bottom: 15px; 
+} 
+ 
+.progress-row > div { 
+  padding: 12px 14px; 
+  background: #f8fafc; 
+  border-radius: 10px; 
+  border: 1px solid #e5e7eb; 
+} 
+ 
+.progress-row .muted { 
+  display: block; 
+  font-size: 12px; 
+  color: #64748b; 
+  margin-bottom: 4px; 
+} 
+ 
+.progress-row strong { 
+  display: block; 
+  font-size: 16px; 
+  color: #111827; 
+} 
+ 
+ 
+/* 狀態 */ 
+.status { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+ 
+  padding: 11px 14px; 
+ 
+  background: #f8fafc; 
+  border-radius: 10px; 
+ 
+  font-size: 14px; 
+  color: #475569; 
+ 
+  margin-bottom: 14px; 
+} 
+ 
+.status .dot { 
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%; 
+  background: #94a3b8; 
+} 
+ 
+ 
+/* 按鈕 */ 
+.actions { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 10px; 
+} 
+ 
+.actions button { 
+  min-height: 46px; 
+  border-radius: 10px; 
+  border: none; 
+ 
+  font-size: 15px; 
+  font-weight: 600; 
+ 
+  cursor: pointer; 
+} 
+ 
+.actions .primary { 
+  background: #111827; 
+  color: white; 
+} 
+ 
+.actions .secondary { 
+  background: #e5e7eb; 
+  color: #374151; 
+} 
+ 
+.actions button:disabled { 
+  opacity: .5; 
+  cursor: not-allowed; 
+} 
+ 
+ 
+/* 提示文字 */ 
+.hint { 
+  margin: 12px 2px 0; 
+ 
+  font-size: 12px; 
+  line-height: 1.6; 
+ 
+  color: #64748b; 
+} 
+ 
+ 
+/* ========================= 
+   手機版 
+========================= */ 
+ 
+@media (max-width: 600px) { 
+ 
+  .progress-row { 
+    grid-template-columns: 1fr 1fr; 
+  } 
+ 
+  .actions { 
+    grid-template-columns: 1fr; 
+  } 
+ 
+  .simple-items label, 
+  .simple-items .item { 
+    padding: 12px; 
+  } 
+ 
+} 
