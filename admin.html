@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#4f46e5"
+    >
+
+    <title>Funbox 抽選資料管理</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            font-family:
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Noto Sans TC",
+                "Microsoft JhengHei",
+                sans-serif;
+
+            color: #172033;
+            background: #f4f6fa;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                linear-gradient(
+                    180deg,
+                    #f7f9fc,
+                    #eef2f7
+                );
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .hero {
+            padding: 38px 20px;
+            color: #fff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1d4ed8,
+                    #4f46e5,
+                    #7c3aed
+                );
+        }
+
+        .hero-inner {
+            width:
+                min(1100px, calc(100% - 20px));
+
+            margin: auto;
+        }
+
+        .hero h1 {
+            margin: 0;
+
+            font-size:
+                clamp(26px, 5vw, 40px);
+
+            font-weight: 900;
+        }
+
+        .hero p {
+            margin:
+                10px 0 0;
+
+            color:
+                rgba(255,255,255,.88);
+        }
+
+        main {
+            width:
+                min(1100px, calc(100% - 24px));
+
+            margin:
+                22px auto 60px;
+        }
+
+        .section {
+            background: #fff;
+
+            border:
+                1px solid #e2e7ef;
+
+            border-radius: 18px;
+
+            padding: 22px;
+
+            margin-bottom: 18px;
+
+            box-shadow:
+                0 8px 24px
+                rgba(23,32,51,.05);
+        }
+
+        .section h2 {
+            margin:
+                0 0 16px;
+
+            font-size: 20px;
+        }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            color: #475467;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+
+            border:
+                1px solid #d9dee8;
+
+            border-radius: 11px;
+
+            padding:
+                11px 12px;
+
+            background: #fff;
+
+            color: #172033;
+
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color:
+                #6366f1;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(99,102,241,.12);
+        }
+
+        textarea {
+            min-height: 180px;
+
+            resize: vertical;
+
+            line-height: 1.6;
+        }
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 15px;
+        }
+
+        .buttons {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+        }
+
+        .btn {
+            min-height: 44px;
+
+            border: 0;
+
+            border-radius: 11px;
+
+            padding:
+                0 17px;
+
+            font-weight: 850;
+        }
+
+        .btn-primary {
+            color: #fff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #7c3aed
+                );
+        }
+
+        .btn-dark {
+            color: #fff;
+
+            background: #172033;
+        }
+
+        .btn-green {
+            color: #fff;
+
+            background: #16a34a;
+        }
+
+        .btn-gray {
+            color: #344054;
+
+            background: #eef1f5;
+        }
+
+        .btn-red {
+            color: #fff;
+
+            background: #dc2626;
+        }
+
+        .status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 14px;
+
+            padding: 11px 13px;
+
+            border-radius: 10px;
+
+            background: #f5f7fa;
+
+            color: #596477;
+
+            font-size: 13px;
+
+            white-space: pre-line;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+        }
+
+        .shop-info {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 15px;
+
+            padding: 13px;
+
+            border-radius: 12px;
+
+            background: #f7f9fc;
+        }
+
+        .shop-info strong {
+            display: block;
+
+            font-size: 16px;
+        }
+
+        .shop-info small {
+            color: #7a8497;
+        }
+
+        .result-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+        .result-item {
+            display: grid;
+
+            grid-template-columns:
+                auto 1fr auto;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 12px;
+
+            border:
+                1px solid #e3e7ee;
+
+            border-radius: 12px;
+
+            background: #fff;
+        }
+
+        .result-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .result-name {
+            min-width: 0;
+
+            font-weight: 800;
+        }
+
+        .result-url {
+            margin-top: 3px;
+
+            color: #718096;
+
+            font-size: 12px;
+
+            word-break: break-all;
+        }
+
+        .result-remove {
+            border: 0;
+
+            padding: 7px 9px;
+
+            border-radius: 8px;
+
+            color: #b42318;
+
+            background: #fee4e2;
+
+            font-size: 12px;
+
+            font-weight: 800;
+        }
+
+        .empty {
+            padding: 25px;
+
+            text-align: center;
+
+            color: #8a94a6;
+        }
+
+        .publish-preview {
+            padding: 14px;
+
+            border-radius: 12px;
+
+            background: #f7f9fc;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+
+            white-space: pre-line;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .warning {
+            padding: 12px;
+
+            border-radius: 11px;
+
+            background: #fff7ed;
+
+            color: #9a3412;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        .success {
+            padding: 12px;
+
+            border-radius: 11px;
+
+            background: #f0fdf4;
+
+            color: #166534;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        .source-links {
+            margin-top: 8px;
+
+            font-size: 13px;
+        }
+
+        .source-links a {
+            color: #2563eb;
+
+            text-decoration: none;
+        }
+
+        @media (max-width: 700px) {
+
+            .hero {
+                padding:
+                    30px 16px;
+            }
+
+            main {
+                width:
+                    calc(100% - 16px);
+            }
+
+            .section {
+                padding: 16px;
+            }
+
+            .grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .result-item {
+                grid-template-columns:
+                    auto 1fr;
+            }
+
+            .result-remove {
+                grid-column:
+                    2;
+                justify-self:
+                    start;
+            }
+
+            .buttons {
+                flex-direction:
+                    column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header class="hero">
+
+    <div class="hero-inner">
+
+        <h1>
+            Funbox 抽選資料管理
+        </h1>
+
+        <p>
+            Facebook 公告 → LINE 抽選 → 確認 → 發布
+        </p>
+
+    </div>
+
+</header>
+
+
+<main>
+
+
+    <!-- =================================================
+         GitHub / Worker 設定
+    ================================================== -->
+
+    <section class="section">
+
+        <h2>
+            ⚙️ 連線設定
+        </h2>
+
+        <div class="grid">
+
+            <div class="field">
+
+                <label>
+                    Worker 網址
+                </label>
+
+                <input
+                    id="workerUrl"
+                    type="url"
+                    placeholder="https://你的-worker.workers.dev"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    管理密鑰
+                </label>
+
+                <input
+                    id="adminKey"
+                    type="password"
+                    placeholder="Cloudflare ADMIN_KEY"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="btn btn-gray"
+                id="loadDataBtn"
+            >
+                🔄 讀取目前資料
+            </button>
+
+        </div>
+
+
+        <div class="status">
+
+            <span class="status-dot"></span>
+
+            <span id="statusText">
+                尚未連線
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         Facebook 公告
+    ================================================== -->
+
+    <section class="section">
+
+        <h2>
+            📢 Facebook 公告
+        </h2>
+
+
+        <div class="field">
+
+            <label>
+                店家
+            </label>
+
+            <select id="shopSelect">
+
+                <option value="nanfang">
+                    Funbox-台南南紡店
+                </option>
+
+                <option value="xintiandi">
+                    funbox-台南新天地
+                </option>
+
+                <option value="far_east">
+                    Funbox台南遠百
+                </option>
+
+                <option value="mitsui">
+                    Funbox台南三井
+                </option>
+
+                <option value="xinren">
+                    來玩聚－新仁店
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Facebook 公告網址
+            </label>
+
+            <input
+                id="facebookUrl"
+                type="url"
+                placeholder="貼上 Facebook 公告網址"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                如果 Facebook 無法自動讀取，可把公告文字貼在這裡
+            </label>
+
+            <textarea
+                id="facebookText"
+                placeholder="把 Facebook 貼文內容貼到這裡，系統會自動找出 LINE 連結與品項名稱。"
+            ></textarea>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="btn btn-primary"
+                id="analyzeBtn"
+            >
+                🔍 分析公告
+            </button>
+
+        </div>
+
+
+        <div class="status">
+
+            <span class="status-dot"></span>
+
+            <span id="analyzeStatus">
+                等待分析
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         分析結果
+    ================================================== -->
+
+    <section
+        class="section hidden"
+        id="resultSection"
+    >
+
+        <h2>
+            🔎 分析結果
+        </h2>
+
+
+        <div class="shop-info">
+
+            <div>
+
+                <strong id="resultShopName">
+                    -
+                </strong>
+
+                <small id="resultCount">
+                    找到 0 個項目
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="warning">
+
+            ⚠️ 請確認品項名稱與 LINE 連結正確。
+            Facebook 貼文格式不同時，系統可能需要你手動修正。
+
+        </div>
+
+
+        <br>
+
+
+        <div
+            class="result-list"
+            id="resultList"
+        ></div>
+
+
+        <br>
+
+
+        <div class="buttons">
+
+            <button
+                class="btn btn-gray"
+                id="addManualBtn"
+            >
+                ＋ 手動新增
+            </button>
+
+            <button
+                class="btn btn-green"
+                id="mergeBtn"
+            >
+                ➕ 加入現有品項
+            </button>
+
+            <button
+                class="btn btn-primary"
+                id="replaceBtn"
+            >
+                🔄 取代本店品項
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         發布
+    ================================================== -->
+
+    <section class="section">
+
+        <h2>
+            🚀 發布資料
+        </h2>
+
+
+        <div
+            class="publish-preview"
+            id="publishPreview"
+        >
+            尚未準備發布資料。
+        </div>
+
+
+        <br>
+
+
+        <div class="buttons">
+
+            <button
+                class="btn btn-green"
+                id="publishBtn"
+                disabled
+            >
+                🚀 發布到 GitHub
+            </button>
+
+        </div>
+
+
+        <div
+            class="status"
+            id="publishStatus"
+        >
+
+            <span class="status-dot"></span>
+
+            <span>
+                尚未發布
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         說明
+    ================================================== -->
+
+    <section class="section">
+
+        <h2>
+            💡 使用流程
+        </h2>
+
+        <div class="publish-preview">
+
+1. 選擇店家。
+
+2. 貼上 Facebook 公告網址。
+
+3. 按「分析公告」。
+
+4. 系統自動尋找 LINE 抽選連結。
+
+5. 確認品項名稱與 LINE。
+
+6. 選擇「加入現有品項」或「取代本店品項」。
+
+7. 按「發布到 GitHub」。
+
+8. GitHub 更新 shops.json。
+
+9. 抽選網站重新整理後即可使用。
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<script src="assets/admin.js"></script>
+
+</body>
+
+</html>
