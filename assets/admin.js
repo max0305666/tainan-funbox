@@ -180,7 +180,6 @@ async function api(
             getAdminKey()
     };
 
-
     const response =
         await fetch(
             url,
@@ -212,7 +211,6 @@ async function api(
 
 
     if (!response.ok) {
-
         throw new Error(
             data.error ||
             `HTTP ${response.status}`
