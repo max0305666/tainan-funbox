@@ -2,6 +2,206 @@
   "updatedAt": "2026-10-01",
   "shops": [
     {
+      "id": "mitsui",
+      "name": "Funbox台南三井",
+      "address": "",
+      "facebook": "https://www.facebook.com/profile.php?id=61591963333031&locale=zh_TW",
+      "items": [
+        {
+          "name": "CX-01 蒼龍勇氣",
+          "url": "https://lin.ee/74ZUulf"
+        },
+        {
+          "name": "CX-14 騎士堡壘",
+          "url": "https://lin.ee/xlly916"
+        },
+        {
+          "name": "UX-14 天蠍長矛",
+          "url": "https://lin.ee/X2Wx0Wo"
+        },
+        {
+          "name": "CX-16 極限衝擊對戰組",
+          "url": "https://lin.ee/znGXrvJo"
+        },
+        {
+          "name": "CX-05 隨機強化組",
+          "url": "https://lin.ee/5o5s6YF"
+        },
+        {
+          "name": "CX-17 隨機強化組",
+          "url": "https://lin.ee/v6bs9GR"
+        }
+      ]
+    },
+    {
+      "id": "far_east",
+      "name": "Funbox台南遠百",
+      "address": "",
+      "facebook": "https://www.facebook.com/profile.php?id=100063915310584&locale=zh_TW",
+      "items": [
+        {
+          "name": "CX-16 極限衝擊對戰組C",
+          "url": "https://lin.ee/nn7LsJi"
+        },
+        {
+          "name": "UX-16 時鐘幻象 隨機強化組",
+          "url": "https://lin.ee/SrKwaD2"
+        },
+        {
+          "name": "CX-13 龍王閃擊",
+          "url": "https://lin.ee/VHv7T6A"
+        },
+        {
+          "name": "UX-19 子彈獅鷲H",
+          "url": "https://lin.ee/rffUFM4"
+        },
+        {
+          "name": "UX-20 榮耀武神LF",
+          "url": "https://lin.ee/TzucQoK"
+        }
+      ]
+    },
+    {
+      "id": "nanfang",
+      "name": "Funbox-台南南紡店",
+      "address": "台南市東區中華東路一段366號A1館4樓",
+      "facebook": "https://www.facebook.com/profile.php?id=100057043616291",
+      "items": [
+        {
+          "name": "BX-26 獨角刺心",
+          "url": "https://lin.ee/Xe9Lsl4"
+        },
+        {
+          "name": "CX-00 福音戰士改造組",
+          "url": "https://lin.ee/zmnEgrZ"
+        },
+        {
+          "name": "CX-05 隨機強化組 Vol.6",
+          "url": "https://lin.ee/pd4V3KX"
+        },
+        {
+          "name": "CX-08 隨機強化組 Vol.7",
+          "url": "https://lin.ee/nfPvNbY"
+        },
+        {
+          "name": "CX-11 帝王威能",
+          "url": "https://lin.ee/zidtobO"
+        },
+        {
+          "name": "CX-16 極限衝擊對戰組C",
+          "url": "https://lin.ee/NDb13ot"
+        },
+        {
+          "name": "CX-17 隨機強化組 Vol.10",
+          "url": "https://lin.ee/5ZqpngZ"
+        },
+        {
+          "name": "UX-01 蒼龍爆刃",
+          "url": "https://lin.ee/QK9i3lKl"
+        },
+        {
+          "name": "UX-03 魔導神杖",
+          "url": "https://lin.ee/Qt4Htnc"
+        },
+        {
+          "name": "UX-13 魔像奇岩",
+          "url": "https://lin.ee/6OlSzHL"
+        },
+        {
+          "name": "UX-15 鮫鯊狂鱗改造組",
+          "url": "https://lin.ee/YAWlN5T"
+        },
+        {
+          "name": "UX-16 時鐘幻象 隨機強化組",
+          "url": "https://lin.ee/wdDhmM8"
+        },
+        {
+          "name": "UX-17 隕星龍騎士3-70J",
+          "url": "https://lin.ee/OGjj6aP"
+        },
+        {
+          "name": "UX-19 子彈獅鷲H",
+          "url": "https://lin.ee/x6cg0hl"
+        },
+        {
+          "name": "UX-20 榮耀武神LF",
+          "url": "https://lin.ee/8Te21n33"
+        }
+      ]
+    },
+    {
+      "id": "xintiandi",
+      "name": "funbox-台南新天地",
+      "address": "台南市中西區西門路一段658號3樓A區",
+      "facebook": "https://www.facebook.com/profile.php?id=100063718945104&locale=zh_TW",
+      "items": [
+        {
+          "name": "BX-00 蒼龍神劍V2",
+          "url": "https://lin.ee/6ggWc7m"
+        },
+        {
+          "name": "UX-03 魔導神杖",
+          "url": "https://lin.ee/8JVQ8q1"
+        },
+        {
+          "name": "UX-14 天蠍長矛",
+          "url": "https://lin.ee/W88nhNw"
+        },
+        {
+          "name": "UX-15 鮫鯊狂鱗改造組",
+          "url": "https://lin.ee/T62bHYE0"
+        },
+        {
+          "name": "UX-16 時鐘幻象 隨機強化組",
+          "url": "https://lin.ee/rHbtprB"
+        },
+        {
+          "name": "UX-17 隕星龍騎士",
+          "url": "https://lin.ee/9440Imv"
+        },
+        {
+          "name": "UX-19 子彈獅鷲H",
+          "url": "https://lin.ee/tFsfRLq"
+        },
+        {
+          "name": "UX-20 榮耀武神",
+          "url": "https://lin.ee/qDqHmiUr"
+        },
+        {
+          "name": "CX-00 新世紀福音戰士改造組",
+          "url": "https://lin.ee/U9d1Oi7"
+        },
+        {
+          "name": "CX-01 蒼龍勇氣",
+          "url": "https://lin.ee/SN2REBn"
+        },
+        {
+          "name": "CX-05 惡魔獵魂 隨機強化組",
+          "url": "https://lin.ee/pGazo4z"
+        },
+        {
+          "name": "CX-08 魔犬烈焰",
+          "url": "https://lin.ee/ois9YWs"
+        },
+        {
+          "name": "CX-11 帝王威能改造組",
+          "url": "https://lin.ee/YYfZVFW"
+        },
+        {
+          "name": "CX-14 騎士堡壘",
+          "url": "https://lin.ee/U6Mm00A"
+        },
+        {
+          "name": "CX-16 極限衝擊對戰組C",
+          "url": "https://lin.ee/rfbgu4v"
+        },
+        {
+          "name": "CX-17 獨角極變 隨機強化組",
+          "url": "https://lin.ee/y8qX1iY2"
+        }
+      ]
+    },
+    {
       "id": "xinren",
       "name": "來玩聚－新仁店",
       "address": "台南市仁德區大同路三段755號1樓",
@@ -68,141 +268,6 @@
           "url": "https://lin.ee/oSniLZu"
         }
       ]
-    },
-{
-  "id": "mitsui",
-  "name": "Funbox台南三井",
-  "address": "",
-  "facebook": "https://www.facebook.com/profile.php?id=61591963333031&locale=zh_TW",
-  "items": [
-    {
-      "name": "CX-01 蒼龍勇氣",
-      "url": "https://lin.ee/74ZUulf"
-    },
-    {
-      "name": "CX-14 騎士堡壘",
-      "url": "https://lin.ee/xlly916"
-    },
-    {
-      "name": "UX-14 天蠍長矛",
-      "url": "https://lin.ee/X2Wx0Wo"
-    },
-    {
-      "name": "CX-16 極限衝擊對戰組",
-      "url": "https://lin.ee/znGXrvJo"
-    },
-    {
-      "name": "CX-05 隨機強化組",
-      "url": "https://lin.ee/5o5s6YF"
-    },
-    {
-      "name": "CX-17 隨機強化組",
-      "url": "https://lin.ee/v6bs9GR"
-    }
-  ]
-},
-   {
-  "id": "far_east",
-  "name": "Funbox台南遠百",
-  "address": "",
-  "facebook": "https://www.facebook.com/profile.php?id=100063915310584&locale=zh_TW",
-  "items": [
-    {
-      "name": "CX-16 極限衝擊對戰組C",
-      "url": "https://lin.ee/nn7LsJi"
-    },
-    {
-      "name": "UX-16 時鐘幻象 隨機強化組",
-      "url": "https://lin.ee/SrKwaD2"
-    },
-    {
-      "name": "CX-13 龍王閃擊",
-      "url": "https://lin.ee/VHv7T6A"
-    },
-    {
-      "name": "UX-19 子彈獅鷲H",
-      "url": "https://lin.ee/rffUFM4"
-    },
-    {
-      "name": "UX-20 榮耀武神LF",
-      "url": "https://lin.ee/TzucQoK"
-    }
-  ]
-},
-    {
-  "id": "nanfang",
-  "name": "Funbox-台南南紡店",
-  "address": "台南市東區中華東路一段366號A1館4樓",
-  "facebook": "https://www.facebook.com/profile.php?id=100057043616291",
-  "items": [
-    {
-      "name": "BX-26 獨角刺心",
-      "url": "https://lin.ee/Xe9Lsl4"
-    },
-    {
-      "name": "CX-00 福音戰士改造組",
-      "url": "https://lin.ee/zmnEgrZ"
-    },
-    {
-      "name": "CX-05 隨機強化組 Vol.6",
-      "url": "https://lin.ee/pd4V3KX"
-    },
-    {
-      "name": "CX-08 隨機強化組 Vol.7",
-      "url": "https://lin.ee/nfPvNbY"
-    },
-    {
-      "name": "CX-11 帝王威能",
-      "url": "https://lin.ee/zidtobO"
-    },
-    {
-      "name": "CX-16 極限衝擊對戰組C",
-      "url": "https://lin.ee/NDb13ot"
-    },
-    {
-      "name": "CX-17 隨機強化組 Vol.10",
-      "url": "https://lin.ee/5ZqpngZ"
-    },
-    {
-      "name": "UX-01 蒼龍爆刃",
-      "url": "https://lin.ee/QK9i3lKl"
-    },
-    {
-      "name": "UX-03 魔導神杖",
-      "url": "https://lin.ee/Qt4Htnc"
-    },
-    {
-      "name": "UX-13 魔像奇岩",
-      "url": "https://lin.ee/6OlSzHL"
-    },
-    {
-      "name": "UX-15 鮫鯊狂鱗改造組",
-      "url": "https://lin.ee/YAWlN5T"
-    },
-    {
-      "name": "UX-16 時鐘幻象 隨機強化組",
-      "url": "https://lin.ee/wdDhmM8"
-    },
-    {
-      "name": "UX-17 隕星龍騎士3-70J",
-      "url": "https://lin.ee/OGjj6aP"
-    },
-    {
-      "name": "UX-19 子彈獅鷲H",
-      "url": "https://lin.ee/x6cg0hl"
-    },
-    {
-      "name": "UX-20 榮耀武神LF",
-      "url": "https://lin.ee/8Te21n33"
-    }
-  ]
-},
-    {
-      "id": "xintiandi",
-      "name": "台南新天地",
-      "address": "",
-      "facebook": "https://www.facebook.com/profile.php?id=100057108474044&locale=zh_TW",
-      "items": []
     }
   ]
 }
