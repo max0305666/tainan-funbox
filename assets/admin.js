@@ -1,234 +1,205 @@
-const STORAGE_WORKER =
-    "tainan_funbox_worker_url";
+const API = {
+    get workerUrl() {
+        return document.getElementById("workerUrl").value.trim().replace(/\/+$/, "");
+    },
 
-const STORAGE_KEY =
-    "tainan_funbox_admin_key";
+    get adminKey() {
+        return document.getElementById("adminKey").value.trim();
+    }
+};
 
 let currentData = null;
 let baseData = null;
 let analyzedItems = [];
-
-const $ = (id) =>
-    document.getElementById(id);
+let selectedShopId = null;
 
 
-/* =====================================================
-   初始化
-===================================================== */
+// =====================================================
+// 共用
+// =====================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+function setStatus(message, type = "normal") {
+    const el = document.getElementById("statusText");
 
-        const workerInput =
-            $("workerUrl");
+    if (!el) return;
 
-        const keyInput =
-            $("adminKey");
+    el.textContent = message;
 
-        if (workerInput) {
-            workerInput.value =
-                localStorage.getItem(
-                    STORAGE_WORKER
-                ) || "";
-        }
+    const box = el.closest(".status");
 
-        if (keyInput) {
-            keyInput.value =
-                localStorage.getItem(
-                    STORAGE_KEY
-                ) || "";
-        }
+    if (!box) return;
 
-        bindEvents();
-
-        setStatus(
-            "請先設定 Worker URL 與管理金鑰。",
-            "info"
-        );
+    if (type === "error") {
+        box.style.background = "#fef2f2";
+        box.style.color = "#b42318";
+    } else if (type === "success") {
+        box.style.background = "#f0fdf4";
+        box.style.color = "#166534";
+    } else {
+        box.style.background = "#f5f7fa";
+        box.style.color = "#596477";
     }
-);
-
-
-/* =====================================================
-   綁定按鈕
-===================================================== */
-
-function bindEvents() {
-
-    $("loadData")?.addEventListener(
-        "click",
-        loadCurrentData
-    );
-
-    $("analyze")?.addEventListener(
-        "click",
-        analyzePost
-    );
-
-    $("publish")?.addEventListener(
-        "click",
-        publishData
-    );
-
-    $("addManual")?.addEventListener(
-        "click",
-        addManualItem
-    );
-
-    $("shopSelect")?.addEventListener(
-        "change",
-        renderCurrentShop
-    );
 }
 
 
-/* =====================================================
-   Worker 設定
-===================================================== */
+function setAnalyzeStatus(message, type = "normal") {
+    const el = document.getElementById("analyzeStatus");
 
-function getWorkerUrl() {
+    if (!el) return;
 
-    const input =
-        $("workerUrl");
+    el.textContent = message;
 
-    let url =
-        input?.value?.trim() || "";
+    const box = el.closest(".status");
 
-    url =
-        url.replace(
-            /\/+$/,
-            ""
-        );
+    if (!box) return;
 
-    if (!url) {
-        throw new Error(
-            "請輸入 Worker URL"
-        );
+    if (type === "error") {
+        box.style.background = "#fef2f2";
+        box.style.color = "#b42318";
+    } else if (type === "success") {
+        box.style.background = "#f0fdf4";
+        box.style.color = "#166534";
+    } else {
+        box.style.background = "#f5f7fa";
+        box.style.color = "#596477";
     }
-
-    localStorage.setItem(
-        STORAGE_WORKER,
-        url
-    );
-
-    return url;
 }
 
 
-function getAdminKey() {
+function setPublishStatus(message, type = "normal") {
+    const el = document.getElementById("publishStatus");
 
-    const input =
-        $("adminKey");
+    if (!el) return;
 
-    const key =
-        input?.value?.trim() || "";
+    const span = el.querySelector("span:last-child");
 
-    if (!key) {
-        throw new Error(
-            "請輸入 ADMIN_KEY"
-        );
+    if (span) {
+        span.textContent = message;
     }
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        key
-    );
-
-    return key;
+    if (type === "error") {
+        el.style.background = "#fef2f2";
+        el.style.color = "#b42318";
+    } else if (type === "success") {
+        el.style.background = "#f0fdf4";
+        el.style.color = "#166534";
+    } else {
+        el.style.background = "#f5f7fa";
+        el.style.color = "#596477";
+    }
 }
 
 
-/* =====================================================
-   API
-===================================================== */
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
-async function api(
-    path,
-    options = {}
-) {
 
-    const url =
-        getWorkerUrl() +
-        path;
+function cloneData(data) {
+    return JSON.parse(JSON.stringify(data));
+}
+
+
+function getCurrentShop() {
+    if (!currentData || !Array.isArray(currentData.shops)) {
+        return null;
+    }
+
+    const shopId = document.getElementById("shopSelect").value;
+
+    return currentData.shops.find(shop => shop.id === shopId) || null;
+}
+
+
+function getSelectedShopId() {
+    return document.getElementById("shopSelect").value;
+}
+
+
+// =====================================================
+// Worker API
+// =====================================================
+
+async function api(path, options = {}) {
+
+    const workerUrl = API.workerUrl;
+
+    if (!workerUrl) {
+        throw new Error("請先輸入 Worker 網址");
+    }
 
     const headers = {
-        "Content-Type":
-            "application/json",
-
-        "X-Admin-Key":
-            getAdminKey()
+        "Content-Type": "application/json"
     };
 
-    const response =
-        await fetch(
-            url,
-            {
-                ...options,
+    if (API.adminKey) {
+        headers["X-Admin-Key"] = API.adminKey;
+    }
 
-                headers: {
-                    ...headers,
-                    ...(options.headers || {})
-                }
+    const response = await fetch(
+        workerUrl + path,
+        {
+            ...options,
+            headers: {
+                ...headers,
+                ...(options.headers || {})
             }
-        );
-
-    /*
-     * Response body 只能讀一次
-     */
-    const rawText =
-        await response.text();
-
-    let data = {};
-
-    if (rawText) {
-
-        try {
-
-            data =
-                JSON.parse(rawText);
-
-        } catch {
-
-            data = {
-                error:
-                    rawText
-            };
-
         }
+    );
+
+    // 只讀一次 response body
+    const rawText = await response.text();
+
+    let data;
+
+    try {
+        data = rawText ? JSON.parse(rawText) : {};
+    } catch {
+        throw new Error(
+            `Worker 回傳非 JSON：\n${rawText.slice(0, 500)}`
+        );
     }
 
     if (!response.ok) {
 
-        throw new Error(
-            data.error ||
-            data.message ||
-            `HTTP ${response.status}`
-        );
+        const message =
+            data?.error ||
+            data?.message ||
+            `HTTP ${response.status}`;
+
+        throw new Error(message);
     }
 
     return data;
 }
 
 
-/* =====================================================
-   讀取目前資料
-===================================================== */
+// =====================================================
+// 讀取目前資料
+// =====================================================
 
 async function loadCurrentData() {
 
+    setStatus("正在讀取 shops.json...", "normal");
+
+    const button = document.getElementById("loadDataBtn");
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "⏳ 讀取中...";
+    }
+
     try {
 
-        setStatus(
-            "正在讀取 GitHub 資料...",
-            "loading"
-        );
-
-        const result =
-            await api("/data");
+        const result = await api("/data");
 
         /*
-         * Worker 回傳：
+         * Worker 現在回傳：
          *
          * {
          *   ok: true,
@@ -237,664 +208,552 @@ async function loadCurrentData() {
          *      shops: [...]
          *   }
          * }
+         *
+         * 同時也支援直接回傳 data。
          */
 
-        const data =
-            result.data || result;
+        const data = result.data || result;
 
-        if (
-            !data ||
-            !Array.isArray(
-                data.shops
-            )
-        ) {
-
-            console.error(
-                "Worker 回傳資料：",
-                result
-            );
+        if (!data || !Array.isArray(data.shops)) {
+            console.error("Worker 回傳內容：", result);
 
             throw new Error(
-                "Worker 回傳的 shops.json 格式不正確"
+                "Worker 回傳資料格式錯誤，找不到 shops 陣列"
             );
         }
 
-        currentData =
-            deepClone(data);
+        currentData = cloneData(data);
+        baseData = cloneData(data);
 
-        baseData =
-            deepClone(data);
+        updateShopSelect();
 
-        renderShopSelect();
-
-        renderCurrentShop();
-
-        renderSummary();
+        renderCurrentSummary();
 
         setStatus(
-            `讀取成功：${data.shops.length} 家店`,
+            `讀取成功：${data.shops.length} 家店，共 ${getTotalItems(data)} 個品項`,
             "success"
         );
 
     } catch (error) {
 
-        console.error(error);
+        console.error("讀取資料失敗：", error);
 
         setStatus(
-            `讀取失敗：${error.message}`,
+            "讀取失敗：\n" + error.message,
             "error"
         );
+
+    } finally {
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "🔄 讀取目前資料";
+        }
     }
 }
 
 
-/* =====================================================
-   店家下拉選單
-===================================================== */
+// =====================================================
+// 店家下拉選單
+// =====================================================
 
-function renderShopSelect() {
+function updateShopSelect() {
 
-    const select =
-        $("shopSelect");
+    const select = document.getElementById("shopSelect");
 
-    if (!select) {
-        return;
-    }
+    if (!select || !currentData) return;
+
+    const oldValue = select.value;
 
     select.innerHTML = "";
 
-    const shops =
-        Array.isArray(
-            currentData?.shops
-        )
-            ? currentData.shops
-            : [];
+    currentData.shops.forEach(shop => {
 
-    shops.forEach(
-        (shop, index) => {
+        const option = document.createElement("option");
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+        option.value = shop.id;
+        option.textContent = shop.name;
 
-            option.value =
-                shop.id;
+        select.appendChild(option);
+    });
 
-            option.textContent =
-                `${shop.name} (${Array.isArray(shop.items) ? shop.items.length : 0})`;
+    const exists = currentData.shops.some(
+        shop => shop.id === oldValue
+    );
 
-            select.appendChild(
-                option
-            );
+    if (exists) {
+        select.value = oldValue;
+    }
 
-            if (index === 0) {
-                option.selected = true;
-            }
-        }
+    renderCurrentSummary();
+}
+
+
+// =====================================================
+// 資料統計
+// =====================================================
+
+function getTotalItems(data) {
+
+    if (!data || !Array.isArray(data.shops)) {
+        return 0;
+    }
+
+    return data.shops.reduce(
+        (total, shop) =>
+            total + (Array.isArray(shop.items) ? shop.items.length : 0),
+        0
     );
 }
 
 
-/* =====================================================
-   顯示目前店家
-===================================================== */
+function renderCurrentSummary() {
 
-function renderCurrentShop() {
+    if (!currentData) return;
 
-    if (!currentData) {
-        return;
-    }
+    const shop = getCurrentShop();
 
-    const select =
-        $("shopSelect");
+    if (!shop) return;
 
-    const shopId =
-        select?.value;
+    const preview = document.getElementById("publishPreview");
 
-    const shop =
-        currentData.shops.find(
-            item =>
-                item.id === shopId
-        );
+    if (!preview) return;
 
-    if (!shop) {
-        return;
-    }
+    const total = getTotalItems(currentData);
 
-    const name =
-        $("currentShopName");
+    preview.textContent =
+        `目前資料：${currentData.shops.length} 家店\n` +
+        `目前總品項：${total} 個\n\n` +
+        `目前選擇店家：${shop.name}\n` +
+        `本店品項：${Array.isArray(shop.items) ? shop.items.length : 0} 個\n\n` +
+        `最後更新：${currentData.updatedAt || "未知"}`;
 
-    if (name) {
-        name.textContent =
-            shop.name;
-    }
-
-    const address =
-        $("currentShopAddress");
-
-    if (address) {
-        address.textContent =
-            shop.address || "—";
-    }
-
-    const facebook =
-        $("currentShopFacebook");
-
-    if (facebook) {
-
-        facebook.href =
-            shop.facebook || "#";
-
-        facebook.textContent =
-            shop.facebook
-                ? "Facebook"
-                : "—";
-    }
-
-    renderCurrentItems(shop);
+    updatePublishButton();
 }
 
 
-/* =====================================================
-   顯示目前品項
-===================================================== */
+// =====================================================
+// Facebook 公告分析
+// =====================================================
 
-function renderCurrentItems(
-    shop
-) {
+async function analyzeFacebook() {
 
-    const container =
-        $("currentItems");
+    setAnalyzeStatus("正在分析公告...", "normal");
 
-    if (!container) {
-        return;
+    const button = document.getElementById("analyzeBtn");
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "⏳ 分析中...";
     }
-
-    container.innerHTML = "";
-
-    const items =
-        Array.isArray(shop.items)
-            ? shop.items
-            : [];
-
-    if (!items.length) {
-
-        container.innerHTML =
-            "<p>目前沒有抽選品項。</p>";
-
-        return;
-    }
-
-    items.forEach(
-        (item, index) => {
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "current-item";
-
-            row.innerHTML = `
-                <div>
-                    <strong>
-                        ${escapeHTML(
-                            item.name ||
-                            "未命名品項"
-                        )}
-                    </strong>
-
-                    <div class="item-url">
-                        ${escapeHTML(
-                            item.url || ""
-                        )}
-                    </div>
-                </div>
-
-                <button
-                    type="button"
-                    data-index="${index}"
-                    class="remove-current"
-                >
-                    刪除
-                </button>
-            `;
-
-            row
-                .querySelector(
-                    ".remove-current"
-                )
-                ?.addEventListener(
-                    "click",
-                    () => {
-
-                        shop.items.splice(
-                            index,
-                            1
-                        );
-
-                        renderCurrentShop();
-                        renderSummary();
-                    }
-                );
-
-            container.appendChild(
-                row
-            );
-        }
-    );
-}
-
-
-/* =====================================================
-   分析 Facebook
-===================================================== */
-
-async function analyzePost() {
 
     try {
 
         const facebookUrl =
-            $("facebookUrl")
-                ?.value
-                ?.trim() || "";
+            document.getElementById("facebookUrl").value.trim();
 
         const text =
-            $("postText")
-                ?.value
-                ?.trim() || "";
+            document.getElementById("facebookText").value.trim();
 
-        if (
-            !facebookUrl &&
-            !text
-        ) {
-
+        if (!facebookUrl && !text) {
             throw new Error(
-                "請輸入 Facebook 網址或貼上公告內容"
+                "請貼上 Facebook 公告網址，或直接貼上公告文字"
             );
         }
 
-        setStatus(
-            "正在分析公告...",
-            "loading"
+        const result = await api(
+            "/analyze",
+            {
+                method: "POST",
+
+                body: JSON.stringify({
+                    facebookUrl,
+                    text
+                })
+            }
         );
 
-        const result =
-            await api(
-                "/analyze",
-                {
-                    method: "POST",
+        analyzedItems =
+            Array.isArray(result.items)
+                ? result.items
+                : Array.isArray(result.data?.items)
+                    ? result.data.items
+                    : [];
 
-                    body:
-                        JSON.stringify({
-                            facebookUrl,
-                            text
-                        })
-                }
+        if (analyzedItems.length === 0) {
+
+            renderAnalyzeResult([]);
+
+            setAnalyzeStatus(
+                "沒有找到 LINE 抽選連結，請確認公告內容。",
+                "error"
             );
 
-        analyzedItems =
-            Array.isArray(
-                result.items
-            )
-                ? result.items
-                : [];
+            return;
+        }
 
-        renderAnalyzedItems();
+        renderAnalyzeResult(analyzedItems);
 
-        setStatus(
-            `分析完成：找到 ${analyzedItems.length} 個 LINE 連結`,
+        setAnalyzeStatus(
+            `分析完成：找到 ${analyzedItems.length} 個 LINE 抽選項目`,
             "success"
         );
 
     } catch (error) {
 
-        console.error(error);
+        console.error("分析失敗：", error);
 
-        setStatus(
-            `分析失敗：${error.message}`,
+        setAnalyzeStatus(
+            "分析失敗：\n" + error.message,
             "error"
         );
-    }
-}
 
+    } finally {
 
-/* =====================================================
-   顯示分析結果
-===================================================== */
-
-function renderAnalyzedItems() {
-
-    const container =
-        $("analyzedItems");
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML = "";
-
-    if (!analyzedItems.length) {
-
-        container.innerHTML =
-            "<p>沒有找到 LINE 抽選連結。</p>";
-
-        return;
-    }
-
-    analyzedItems.forEach(
-        (item, index) => {
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "analyzed-item";
-
-            row.innerHTML = `
-                <label>
-                    <input
-                        type="checkbox"
-                        class="analyzed-check"
-                        data-index="${index}"
-                        checked
-                    >
-                    保留
-                </label>
-
-                <input
-                    type="text"
-                    class="analyzed-name"
-                    data-index="${index}"
-                    value="${escapeAttribute(
-                        item.name ||
-                        "待確認品項"
-                    )}"
-                >
-
-                <input
-                    type="url"
-                    class="analyzed-url"
-                    data-index="${index}"
-                    value="${escapeAttribute(
-                        item.url || ""
-                    )}"
-                >
-            `;
-
-            container.appendChild(
-                row
-            );
+        if (button) {
+            button.disabled = false;
+            button.textContent = "🔍 分析公告";
         }
-    );
+    }
 }
 
 
-/* =====================================================
-   取得使用者確認後的分析結果
-===================================================== */
+// =====================================================
+// 顯示分析結果
+// =====================================================
+
+function renderAnalyzeResult(items) {
+
+    const section =
+        document.getElementById("resultSection");
+
+    const list =
+        document.getElementById("resultList");
+
+    const shopName =
+        document.getElementById("resultShopName");
+
+    const count =
+        document.getElementById("resultCount");
+
+    if (!section || !list) return;
+
+    section.classList.remove("hidden");
+
+    const shop = getCurrentShop();
+
+    shopName.textContent =
+        shop ? shop.name : "目前店家";
+
+    count.textContent =
+        `找到 ${items.length} 個項目`;
+
+    if (!items.length) {
+
+        list.innerHTML =
+            `<div class="empty">目前沒有分析結果。</div>`;
+
+        updatePublishButton();
+
+        return;
+    }
+
+    list.innerHTML = items.map((item, index) => {
+
+        return `
+            <div class="result-item">
+
+                <input
+                    type="checkbox"
+                    class="analyzed-check"
+                    data-index="${index}"
+                    checked
+                >
+
+                <div>
+
+                    <input
+                        type="text"
+                        class="analyzed-name"
+                        data-index="${index}"
+                        value="${escapeHtml(item.name || "")}"
+                        placeholder="品項名稱"
+                    >
+
+                    <input
+                        type="url"
+                        class="analyzed-url"
+                        data-index="${index}"
+                        value="${escapeHtml(item.url || "")}"
+                        placeholder="LINE 抽選網址"
+                        style="margin-top:6px"
+                    >
+
+                </div>
+
+                <button
+                    class="result-remove"
+                    type="button"
+                    data-remove-index="${index}"
+                >
+                    移除
+                </button>
+
+            </div>
+        `;
+    }).join("");
+
+    // 移除按鈕
+    list.querySelectorAll("[data-remove-index]")
+        .forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                const index =
+                    Number(button.dataset.removeIndex);
+
+                analyzedItems.splice(index, 1);
+
+                renderAnalyzeResult(analyzedItems);
+            });
+        });
+
+    updatePublishButton();
+}
+
+
+// =====================================================
+// 取得目前勾選的分析結果
+// =====================================================
 
 function getSelectedAnalyzedItems() {
 
-    const container =
-        $("analyzedItems");
+    const list =
+        document.getElementById("resultList");
 
-    if (!container) {
-        return [];
-    }
-
-    const rows =
-        container.querySelectorAll(
-            ".analyzed-item"
-        );
+    if (!list) return [];
 
     const result = [];
 
-    rows.forEach(
-        row => {
+    const rows =
+        list.querySelectorAll(".result-item");
 
-            const check =
-                row.querySelector(
-                    ".analyzed-check"
-                );
+    rows.forEach(row => {
 
-            if (
-                !check ||
-                !check.checked
-            ) {
-                return;
-            }
+        const checkbox =
+            row.querySelector(".analyzed-check");
 
-            const name =
-                row.querySelector(
-                    ".analyzed-name"
-                )?.value
-                ?.trim() || "";
-
-            const url =
-                row.querySelector(
-                    ".analyzed-url"
-                )?.value
-                ?.trim() || "";
-
-            if (!url) {
-                return;
-            }
-
-            result.push({
-                name:
-                    name ||
-                    "待確認品項",
-
-                url
-            });
+        if (!checkbox || !checkbox.checked) {
+            return;
         }
-    );
+
+        const name =
+            row.querySelector(".analyzed-name")?.value.trim();
+
+        const url =
+            row.querySelector(".analyzed-url")?.value.trim();
+
+        if (!name || !url) {
+            return;
+        }
+
+        result.push({
+            name,
+            url
+        });
+    });
 
     return result;
 }
 
 
-/* =====================================================
-   發布
-===================================================== */
+// =====================================================
+// 加入現有品項
+// =====================================================
 
-async function publishData() {
+function mergeItems() {
 
-    try {
-
-        if (!currentData) {
-
-            throw new Error(
-                "請先讀取目前資料"
-            );
-        }
-
-        const select =
-            $("shopSelect");
-
-        const shopId =
-            select?.value;
-
-        if (!shopId) {
-
-            throw new Error(
-                "請選擇店家"
-            );
-        }
-
-        const selectedItems =
-            getSelectedAnalyzedItems();
-
-        if (!selectedItems.length) {
-
-            throw new Error(
-                "請先分析並選擇至少一個品項"
-            );
-        }
-
-        const mode =
-            document.querySelector(
-                'input[name="publishMode"]:checked'
-            )?.value ||
-            "merge";
-
-        const draft =
-            deepClone(baseData);
-
-        const shop =
-            draft.shops.find(
-                item =>
-                    item.id === shopId
-            );
-
-        if (!shop) {
-
-            throw new Error(
-                "找不到指定店家"
-            );
-        }
-
-        if (!Array.isArray(shop.items)) {
-            shop.items = [];
-        }
-
-        if (mode === "replace") {
-
-            shop.items =
-                selectedItems;
-
-        } else {
-
-            const existingUrls =
-                new Set(
-                    shop.items.map(
-                        item =>
-                            item.url
-                    )
-                );
-
-            selectedItems.forEach(
-                item => {
-
-                    if (
-                        !existingUrls.has(
-                            item.url
-                        )
-                    ) {
-
-                        shop.items.push(
-                            item
-                        );
-
-                    }
-                }
-            );
-        }
+    if (!currentData) {
 
         setStatus(
-            "正在發布到 GitHub...",
-            "loading"
-        );
-
-        const result =
-            await api(
-                "/publish",
-                {
-                    method: "POST",
-
-                    body:
-                        JSON.stringify({
-                            data: draft
-                        })
-                }
-            );
-
-        currentData =
-            deepClone(draft);
-
-        baseData =
-            deepClone(draft);
-
-        renderShopSelect();
-
-        renderCurrentShop();
-
-        renderSummary();
-
-        setStatus(
-            result.message ||
-            "發布成功",
-            "success"
-        );
-
-    } catch (error) {
-
-        console.error(error);
-
-        setStatus(
-            `發布失敗：${error.message}`,
+            "請先按「讀取目前資料」",
             "error"
         );
+
+        return;
     }
+
+    const items = getSelectedAnalyzedItems();
+
+    if (!items.length) {
+
+        setAnalyzeStatus(
+            "請至少勾選一個有效的品項",
+            "error"
+        );
+
+        return;
+    }
+
+    const shop = getCurrentShop();
+
+    if (!shop) {
+
+        setAnalyzeStatus(
+            "找不到目前店家",
+            "error"
+        );
+
+        return;
+    }
+
+    if (!Array.isArray(shop.items)) {
+        shop.items = [];
+    }
+
+    let added = 0;
+    let skipped = 0;
+
+    items.forEach(item => {
+
+        const exists =
+            shop.items.some(existing =>
+                existing.url === item.url
+            );
+
+        if (exists) {
+            skipped++;
+            return;
+        }
+
+        shop.items.push({
+            name: item.name,
+            url: item.url
+        });
+
+        added++;
+    });
+
+    renderCurrentSummary();
+
+    setAnalyzeStatus(
+        `已加入 ${added} 個品項` +
+        (skipped ? `，${skipped} 個重複項目已跳過` : ""),
+        "success"
+    );
+
+    updatePublishButton();
 }
 
 
-/* =====================================================
-   手動新增品項
-===================================================== */
+// =====================================================
+// 取代本店品項
+// =====================================================
+
+function replaceItems() {
+
+    if (!currentData) {
+
+        setStatus(
+            "請先按「讀取目前資料」",
+            "error"
+        );
+
+        return;
+    }
+
+    const items = getSelectedAnalyzedItems();
+
+    if (!items.length) {
+
+        setAnalyzeStatus(
+            "請至少勾選一個有效的品項",
+            "error"
+        );
+
+        return;
+    }
+
+    const shop = getCurrentShop();
+
+    if (!shop) {
+
+        setAnalyzeStatus(
+            "找不到目前店家",
+            "error"
+        );
+
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            `確定要取代「${shop.name}」目前的全部品項嗎？\n\n` +
+            `目前：${shop.items?.length || 0} 個\n` +
+            `取代後：${items.length} 個`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    shop.items = items.map(item => ({
+        name: item.name,
+        url: item.url
+    }));
+
+    renderCurrentSummary();
+
+    setAnalyzeStatus(
+        `已取代本店品項，共 ${items.length} 個`,
+        "success"
+    );
+
+    updatePublishButton();
+}
+
+
+// =====================================================
+// 手動新增
+// =====================================================
 
 function addManualItem() {
 
     if (!currentData) {
 
         setStatus(
-            "請先讀取目前資料",
+            "請先按「讀取目前資料」",
             "error"
         );
 
         return;
     }
-
-    const nameInput =
-        $("manualName");
-
-    const urlInput =
-        $("manualUrl");
 
     const name =
-        nameInput
-            ?.value
-            ?.trim() || "";
+        prompt("請輸入品項名稱：");
 
-    const url =
-        urlInput
-            ?.value
-            ?.trim() || "";
-
-    if (!name || !url) {
-
-        setStatus(
-            "請輸入品項名稱與 LINE URL",
-            "error"
-        );
-
+    if (!name) {
         return;
     }
 
-    const shopId =
-        $("shopSelect")
-            ?.value;
+    const url =
+        prompt("請輸入 LINE 抽選網址：");
 
-    const shop =
-        currentData.shops.find(
-            item =>
-                item.id === shopId
+    if (!url) {
+        return;
+    }
+
+    if (
+        !url.startsWith("https://lin.ee/") &&
+        !url.startsWith("https://line.me/")
+    ) {
+        alert(
+            "這看起來不是 LINE 抽選網址。\n\n" +
+            "請確認是否為 lin.ee 或 line.me 網址。"
         );
+    }
+
+    const shop = getCurrentShop();
 
     if (!shop) {
         return;
@@ -905,149 +764,295 @@ function addManualItem() {
     }
 
     const exists =
-        shop.items.some(
-            item =>
-                item.url === url
-        );
+        shop.items.some(item => item.url === url);
 
     if (exists) {
 
-        setStatus(
-            "這個 LINE 連結已存在",
+        alert("這個 LINE 連結已經存在。");
+
+        return;
+    }
+
+    shop.items.push({
+        name: name.trim(),
+        url: url.trim()
+    });
+
+    renderCurrentSummary();
+
+    setAnalyzeStatus(
+        `已手動新增：${name.trim()}`,
+        "success"
+    );
+}
+
+
+// =====================================================
+// 發布
+// =====================================================
+
+async function publishData() {
+
+    if (!currentData) {
+
+        setPublishStatus(
+            "請先讀取目前資料",
             "error"
         );
 
         return;
     }
 
-    shop.items.push({
-        name,
-        url
-    });
+    const confirmed =
+        confirm(
+            "確定要發布目前資料到 GitHub 嗎？\n\n" +
+            "發布後 data/shops.json 會被更新。"
+        );
 
-    nameInput.value = "";
-    urlInput.value = "";
+    if (!confirmed) {
+        return;
+    }
 
-    renderCurrentShop();
-    renderSummary();
+    const button =
+        document.getElementById("publishBtn");
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "⏳ 發布中...";
+    }
+
+    setPublishStatus(
+        "正在發布到 GitHub...",
+        "normal"
+    );
+
+    try {
+
+        const result =
+            await api(
+                "/publish",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        data: currentData
+                    })
+                }
+            );
+
+        const publishedData =
+            result.data || result;
+
+        if (
+            publishedData &&
+            Array.isArray(publishedData.shops)
+        ) {
+            currentData =
+                cloneData(publishedData);
+
+            baseData =
+                cloneData(publishedData);
+        }
+
+        renderCurrentSummary();
+
+        setPublishStatus(
+            "發布成功！GitHub shops.json 已更新。",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error("發布失敗：", error);
+
+        setPublishStatus(
+            "發布失敗：\n" + error.message,
+            "error"
+        );
+
+    } finally {
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "🚀 發布到 GitHub";
+        }
+    }
+}
+
+
+// =====================================================
+// 發布按鈕狀態
+// =====================================================
+
+function updatePublishButton() {
+
+    const button =
+        document.getElementById("publishBtn");
+
+    if (!button) return;
+
+    button.disabled =
+        !currentData ||
+        !Array.isArray(currentData.shops);
+}
+
+
+// =====================================================
+// 店家切換
+// =====================================================
+
+function handleShopChange() {
+
+    selectedShopId =
+        getSelectedShopId();
+
+    renderCurrentSummary();
+
+    const section =
+        document.getElementById("resultSection");
+
+    if (section) {
+        section.classList.add("hidden");
+    }
+
+    analyzedItems = [];
+
+    setAnalyzeStatus(
+        "等待分析",
+        "normal"
+    );
+}
+
+
+// =====================================================
+// 初始化
+// =====================================================
+
+function init() {
+
+    console.log("Funbox admin.js 啟動");
+
+    const loadButton =
+        document.getElementById("loadDataBtn");
+
+    const analyzeButton =
+        document.getElementById("analyzeBtn");
+
+    const mergeButton =
+        document.getElementById("mergeBtn");
+
+    const replaceButton =
+        document.getElementById("replaceBtn");
+
+    const manualButton =
+        document.getElementById("addManualBtn");
+
+    const publishButton =
+        document.getElementById("publishBtn");
+
+    const shopSelect =
+        document.getElementById("shopSelect");
+
+
+    // 讀取目前資料
+    if (loadButton) {
+
+        loadButton.addEventListener(
+            "click",
+            loadCurrentData
+        );
+
+    } else {
+
+        console.error(
+            "找不到 loadDataBtn"
+        );
+    }
+
+
+    // 分析 Facebook
+    if (analyzeButton) {
+
+        analyzeButton.addEventListener(
+            "click",
+            analyzeFacebook
+        );
+
+    }
+
+
+    // 加入現有
+    if (mergeButton) {
+
+        mergeButton.addEventListener(
+            "click",
+            mergeItems
+        );
+
+    }
+
+
+    // 取代
+    if (replaceButton) {
+
+        replaceButton.addEventListener(
+            "click",
+            replaceItems
+        );
+
+    }
+
+
+    // 手動新增
+    if (manualButton) {
+
+        manualButton.addEventListener(
+            "click",
+            addManualItem
+        );
+
+    }
+
+
+    // 發布
+    if (publishButton) {
+
+        publishButton.addEventListener(
+            "click",
+            publishData
+        );
+
+    }
+
+
+    // 店家切換
+    if (shopSelect) {
+
+        shopSelect.addEventListener(
+            "change",
+            handleShopChange
+        );
+
+    }
+
 
     setStatus(
-        "已加入目前資料，發布後才會寫入 GitHub。",
-        "success"
+        "管理頁面已載入，請輸入 Worker 網址與管理密鑰。",
+        "normal"
     );
 }
 
 
-/* =====================================================
-   Summary
-===================================================== */
+// 確保 HTML 完成後再綁事件
+if (document.readyState === "loading") {
 
-function renderSummary() {
-
-    const el =
-        $("summary");
-
-    if (!el || !currentData) {
-        return;
-    }
-
-    const shops =
-        Array.isArray(
-            currentData.shops
-        )
-            ? currentData.shops
-            : [];
-
-    const totalItems =
-        shops.reduce(
-            (sum, shop) => {
-
-                const items =
-                    Array.isArray(
-                        shop.items
-                    )
-                        ? shop.items
-                        : [];
-
-                return sum +
-                    items.length;
-
-            },
-            0
-        );
-
-    el.textContent =
-        `目前資料：${shops.length} 家店，共 ${totalItems} 個品項`;
-}
-
-
-/* =====================================================
-   Status
-===================================================== */
-
-function setStatus(
-    message,
-    type = "info"
-) {
-
-    const el =
-        $("status");
-
-    if (!el) {
-        return;
-    }
-
-    el.textContent =
-        message;
-
-    el.className =
-        `status ${type}`;
-}
-
-
-/* =====================================================
-   Deep Clone
-===================================================== */
-
-function deepClone(data) {
-
-    return JSON.parse(
-        JSON.stringify(data)
+    document.addEventListener(
+        "DOMContentLoaded",
+        init
     );
-}
 
+} else {
 
-/* =====================================================
-   Escape HTML
-===================================================== */
+    init();
 
-function escapeHTML(value) {
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-
-function escapeAttribute(value) {
-
-    return escapeHTML(value);
 }
