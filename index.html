@@ -1,145 +1,277 @@
 <!doctype html>
 <html lang="zh-Hant">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827">
-<title>台南 Funbox 抽選助手</title>
-<link rel="stylesheet" href="assets/style.css">
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#111827">
+
+  <title>台南 Funbox 抽選助手</title>
+
+  <link rel="stylesheet" href="assets/style.css">
 </head>
+
 
 <body>
 
-<header class="hero">
-  <div class="hero-inner">
-    <div class="eyebrow">FUNBOX · TAINAN</div>
-    <h1>台南 Funbox<br>抽選助手</h1>
-    <p>選擇商品後，逐項開啟 LINE 抽選，完成後再進行下一個</p>
-  </div>
-</header>
+  <!-- =========================
+       頂部
+  ========================== -->
+  <header class="hero">
 
-<main>
+    <div class="hero-inner">
 
-  <!-- 最新公告 -->
-  <section class="notice card">
-    <div class="section-title">
-      <div>
-        <span class="kicker">LATEST</span>
-        <h2>最新店家公告</h2>
-      </div>
-      <span id="lastSync" class="sync">讀取中…</span>
-    </div>
-
-    <div id="posts"></div>
-  </section>
-
-
-  <!-- 選擇店家 -->
-  <section class="card">
-    <div class="section-title">
-      <div>
-        <span class="kicker">SHOPS</span>
-        <h2>選擇店家</h2>
-      </div>
-    </div>
-
-    <div id="shops" class="shop-grid"></div>
-  </section>
-
-
-  <!-- 抽選控制區 -->
-  <section class="control card">
-
-    <div class="progress-row">
-
-      <div>
-        <span class="muted">目前進度</span>
-        <strong id="progress">0 / 0</strong>
+      <div class="eyebrow">
+        FUNBOX · TAINAN
       </div>
 
-      <div>
-        <span class="muted">目前項目</span>
-        <strong id="current">尚未開始</strong>
+      <h1>
+        台南 Funbox<br>
+        抽選助手
+      </h1>
+
+      <p>
+        選擇商品後，逐項開啟 LINE 抽選
+      </p>
+
+    </div>
+
+  </header>
+
+
+
+  <main>
+
+
+    <!-- =========================
+         最新店家公告
+    ========================== -->
+    <section class="notice card">
+
+      <div class="section-title">
+
+        <div>
+          <span class="kicker">
+            LATEST
+          </span>
+
+          <h2>
+            最新店家公告
+          </h2>
+        </div>
+
+        <span
+          id="lastSync"
+          class="sync"
+        >
+          讀取中…
+        </span>
+
       </div>
 
-    </div>
+
+      <div id="posts"></div>
+
+    </section>
 
 
-    <div class="status" id="status">
-      <span class="dot"></span>
-      待機中
-    </div>
 
+    <!-- =========================
+         選擇店家
+    ========================== -->
+    <section class="card">
 
-    <!-- 目前正在抽的商品 -->
-    <div id="currentItem" class="current-item" hidden>
+      <div class="section-title">
 
-      <span class="current-label">現在要抽</span>
+        <div>
+          <span class="kicker">
+            SHOPS
+          </span>
 
-      <strong id="currentName">
-        尚未開始
-      </strong>
+          <h2>
+            選擇店家
+          </h2>
+        </div>
 
-    </div>
-
-
-    <div class="actions">
-
-      <button id="start" class="primary">
-        ▶ 開始抽選
-      </button>
-
-      <button id="openCurrent" class="primary" disabled>
-        🎲 開啟 LINE 抽選
-      </button>
-
-      <button id="next" class="secondary" disabled>
-        ➜ 下一個
-      </button>
-
-      <button id="stop" class="secondary">
-        ■ 停止
-      </button>
-
-    </div>
-
-
-    <p class="hint">
-      開啟 LINE 完成抽選後，回到這個網站，再按「下一個」繼續。
-    </p>
-
-  </section>
-
-
-  <!-- 商品 -->
-  <section class="card">
-
-    <div class="section-title">
-
-      <div>
-        <span class="kicker">ITEMS</span>
-        <h2>抽選品項</h2>
       </div>
 
-      <button id="selectAll" class="text-btn">
-        全選
-      </button>
 
-    </div>
+      <div
+        id="shops"
+        class="shop-grid"
+      ></div>
 
-    <div id="items"></div>
-
-  </section>
-
-</main>
+    </section>
 
 
-<footer>
-  台南 Funbox 抽選助手 · 手動逐項抽選
-</footer>
+
+    <!-- =========================
+         抽選控制區
+    ========================== -->
+    <section class="control card">
 
 
-<script src="assets/app.js"></script>
+      <!-- 進度 -->
+      <div class="progress-row">
+
+        <div>
+
+          <span class="muted">
+            目前進度
+          </span>
+
+          <strong id="progress">
+            0 / 0
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span class="muted">
+            目前項目
+          </span>
+
+          <strong id="current">
+            尚未開始
+          </strong>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- 狀態 -->
+      <div
+        class="status"
+        id="status"
+      >
+
+        <span class="dot"></span>
+
+        待機中
+
+      </div>
+
+
+
+      <!-- 操作按鈕 -->
+      <div class="actions">
+
+
+        <!--
+          按這顆：
+          直接開第一個 LINE
+        -->
+        <button
+          id="start"
+          class="primary"
+        >
+          🎲 開始抽選
+        </button>
+
+
+        <!--
+          回到網站後：
+          按這顆直接開下一個 LINE
+        -->
+        <button
+          id="next"
+          class="secondary"
+          disabled
+        >
+          ➜ 下一個
+        </button>
+
+
+        <!-- 停止目前流程 -->
+        <button
+          id="stop"
+          class="secondary"
+        >
+          ■ 停止
+        </button>
+
+      </div>
+
+
+
+      <!-- 使用說明 -->
+      <p class="hint">
+
+        按「開始抽選」會直接開啟第一個 LINE 抽選。
+        完成後回到這裡，再按「下一個」開啟下一項。
+
+      </p>
+
+    </section>
+
+
+
+    <!-- =========================
+         抽選品項
+    ========================== -->
+    <section class="card">
+
+
+      <div class="section-title">
+
+        <div>
+
+          <span class="kicker">
+            ITEMS
+          </span>
+
+          <h2>
+            抽選品項
+          </h2>
+
+        </div>
+
+
+        <button
+          id="selectAll"
+          class="text-btn"
+        >
+          全選
+        </button>
+
+      </div>
+
+
+
+      <div id="items"></div>
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- =========================
+       頁尾
+  ========================== -->
+  <footer>
+
+    台南 Funbox 抽選助手 · 手動逐項抽選
+
+  </footer>
+
+
+
+  <!-- =========================
+       JavaScript
+  ========================== -->
+  <script src="assets/app.js"></script>
 
 </body>
+
 </html>
