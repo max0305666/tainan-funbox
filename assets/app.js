@@ -1,17 +1,13 @@
-```javascript
 let DATA = null;
-
 let selectedShop = "all";
 
 let running = false;
-
 let queue = [];
-
 let index = 0;
 
 
 /* =========================================================
-   頁面初始化
+   初始化
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -38,12 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadData();
-
 });
 
 
 /* =========================================================
-   讀取 shops.json
+   讀取店家資料
 ========================================================= */
 
 async function loadData() {
@@ -56,89 +51,63 @@ async function loadData() {
       lastSync.textContent = "資料讀取中…";
     }
 
-
     const response = await fetch(
-      "data/shops.json",
+      "data/shops.json?time=" + Date.now(),
       {
         cache: "no-store"
       }
     );
 
-
     if (!response.ok) {
-
       throw new Error(
-        `HTTP ${response.status}`
+        "HTTP " + response.status
       );
-
     }
-
 
     const json = await response.json();
 
-
-    /*
-      確認 JSON 格式
-    */
-
     if (!json || !Array.isArray(json.shops)) {
-
       throw new Error(
-        "shops.json 找不到 shops 陣列"
+        "shops.json 格式錯誤：找不到 shops"
       );
-
     }
-
 
     DATA = json;
 
-
-    console.log(
-      "shops.json 載入成功：",
-      DATA
-    );
-
-
-    console.log(
-      "店家數量：",
-      DATA.shops.length
-    );
-
+    console.log("Funbox 資料載入成功");
+    console.log("店家數量：", DATA.shops.length);
 
     DATA.shops.forEach((shop, index) => {
 
       console.log(
-        `店家 ${index + 1}：`,
+        index + 1,
         shop.name,
-        "品項：",
+        "→",
         Array.isArray(shop.items)
           ? shop.items.length
-          : 0
+          : 0,
+        "項"
       );
 
     });
 
-
     renderPosts();
-
     renderShops();
-
     renderItems();
 
-
     if (lastSync) {
-
       lastSync.textContent =
         "同步 " +
         (DATA.updatedAt || "尚未設定");
-
     }
 
-
     setStatus(
-      `資料已載入，共 ${DATA.shops.length} 家店`
+      "資料已載入，共 " +
+      DATA.shops.length +
+      " 家店"
     );
 
+    updateButtons();
 
   } catch (error) {
 
@@ -147,32 +116,20 @@ async function loadData() {
       error
     );
 
-
     if (lastSync) {
-
-      lastSync.textContent =
-        "資料讀取失敗";
-
+      lastSync.textContent = "資料讀取失敗";
     }
 
-
-    setStatus(
-      "資料讀取失敗"
-    );
-
+    setStatus("資料讀取失敗");
 
     alert(
-      "無法讀取 data/shops.json\n\n" +
-      "請確認：\n" +
-      "1. shops.json 是否存在\n" +
-      "2. 檔案位置是否為 data/shops.json\n" +
-      "3. JSON 格式是否正確\n\n" +
+      "無法讀取店家資料。\n\n" +
+      "請確認 data/shops.json 是否存在，" +
+      "以及 JSON 格式是否正確。\n\n" +
       "錯誤：" +
       error.message
     );
-
   }
-
 }
 
 
@@ -182,16 +139,13 @@ async function loadData() {
 
 function renderPosts() {
 
-  const posts =
-    document.querySelector("#posts");
+  const posts = document.querySelector("#posts");
 
   if (!posts || !DATA) {
     return;
   }
 
-
   posts.innerHTML = "";
-
 
   DATA.shops.forEach(shop => {
 
@@ -200,19 +154,16 @@ function renderPosts() {
         ? shop.items
         : [];
 
-
-    const itemNames =
+    const names =
       items
         .slice(0, 4)
         .map(item => esc(item.name))
         .join("　·　");
 
-
     const more =
       items.length > 4
         ? "　…"
         : "";
-
 
     posts.insertAdjacentHTML(
       "beforeend",
@@ -232,11 +183,11 @@ function renderPosts() {
         </div>
 
         <div class="post-items">
-
-          ${itemNames || "目前沒有抽選品項"}
-
+          ${
+            names ||
+            "目前沒有抽選品項"
+          }
           ${more}
-
         </div>
 
       </article>
@@ -244,36 +195,30 @@ function renderPosts() {
     );
 
   });
-
 }
 
 
 /* =========================================================
-   店家按鈕
+   店家列表
 ========================================================= */
 
 function renderShops() {
 
-  const shops =
-    document.querySelector("#shops");
+  const shops = document.querySelector("#shops");
 
   if (!shops || !DATA) {
     return;
   }
 
+  let html = "";
 
-  shops.innerHTML = "";
-
-
-  /*
-    全部店家
-  */
-
-  shops.insertAdjacentHTML(
-    "beforeend",
-    `
+  html += `
     <button
-      class="shop-btn ${selectedShop === "all" ? "active" : ""}"
+      class="shop-btn ${
+        selectedShop === "all"
+          ? "active"
+          : ""
+      }"
       onclick="chooseShop('all')"
     >
 
@@ -286,13 +231,8 @@ function renderShops() {
       </small>
 
     </button>
-    `
-  );
+  `;
 
-
-  /*
-    所有店家
-  */
 
   DATA.shops.forEach((shop, index) => {
 
@@ -301,12 +241,13 @@ function renderShops() {
         ? shop.items
         : [];
 
-
-    shops.insertAdjacentHTML(
-      "beforeend",
-      `
+    html += `
       <button
-        class="shop-btn ${selectedShop === index ? "active" : ""}"
+        class="shop-btn ${
+          selectedShop === index
+            ? "active"
+            : ""
+        }"
         onclick="chooseShop(${index})"
       >
 
@@ -319,11 +260,11 @@ function renderShops() {
         </small>
 
       </button>
-      `
-    );
+    `;
 
   });
 
+  shops.innerHTML = html;
 }
 
 
@@ -333,10 +274,6 @@ function renderShops() {
 
 function chooseShop(shopIndex) {
 
-  /*
-    抽選進行中不能切換
-  */
-
   if (running) {
 
     alert(
@@ -345,26 +282,15 @@ function chooseShop(shopIndex) {
     );
 
     return;
-
   }
-
 
   selectedShop = shopIndex;
 
-
-  renderShops();
-
-  renderItems();
-
-
-  /*
-    重設進度
-  */
-
   queue = [];
-
   index = 0;
 
+  renderShops();
+  renderItems();
 
   const progress =
     document.querySelector("#progress");
@@ -372,23 +298,83 @@ function chooseShop(shopIndex) {
   const current =
     document.querySelector("#current");
 
-
   if (progress) {
     progress.textContent = "0 / 0";
   }
-
 
   if (current) {
     current.textContent = "尚未開始";
   }
 
+  if (selectedShop === "all") {
 
-  setStatus(
-    selectedShop === "all"
-      ? "已選擇全部店家"
-      : `已選擇 ${DATA.shops[selectedShop].name}`
+    setStatus(
+      "已選擇全部店家"
+    );
+
+  } else {
+
+    setStatus(
+      "已選擇 " +
+      DATA.shops[selectedShop].name
+    );
+
+  }
+
+  updateButtons();
+}
+
+
+/* =========================================================
+   取得目前顯示中的品項
+========================================================= */
+
+function getCurrentItems() {
+
+  if (!DATA) {
+    return [];
+  }
+
+  const list = [];
+
+  DATA.shops.forEach(
+    (shop, shopIndex) => {
+
+      if (
+        selectedShop !== "all" &&
+        selectedShop !== shopIndex
+      ) {
+        return;
+      }
+
+      if (!Array.isArray(shop.items)) {
+        return;
+      }
+
+      shop.items.forEach(
+        (item, itemIndex) => {
+
+          list.push({
+
+            name: item.name || "未命名品項",
+
+            url: item.url || "",
+
+            shop: shop.name || "未命名店家",
+
+            shopIndex: shopIndex,
+
+            itemIndex: itemIndex
+
+          });
+
+        }
+      );
+
+    }
   );
 
+  return list;
 }
 
 
@@ -405,67 +391,8 @@ function renderItems() {
     return;
   }
 
+  const list = getCurrentItems();
 
-  let list = [];
-
-
-  /*
-    全部店家
-  */
-
-  DATA.shops.forEach(
-    (shop, shopIndex) => {
-
-      /*
-        如果不是全部，只處理指定店家
-      */
-
-      if (
-        selectedShop !== "all" &&
-        selectedShop !== shopIndex
-      ) {
-
-        return;
-
-      }
-
-
-      /*
-        防止 items 不存在
-      */
-
-      if (!Array.isArray(shop.items)) {
-
-        return;
-
-      }
-
-
-      shop.items.forEach(
-        (item, itemIndex) => {
-
-          list.push({
-
-            ...item,
-
-            shop: shop.name,
-
-            shopIndex,
-
-            itemIndex
-
-          });
-
-        }
-      );
-
-    }
-  );
-
-
-  /*
-    沒有商品
-  */
 
   if (!list.length) {
 
@@ -476,67 +403,60 @@ function renderItems() {
     `;
 
     return;
-
   }
 
 
-  /*
-    建立商品
-  */
-
   itemsContainer.innerHTML =
-    list.map(
-      (item, index) => {
+    list.map((item, index) => {
 
-        return `
-          <label class="item">
-
-            <input
-              type="checkbox"
-              class="item-check"
-              data-index="${index}"
-              checked
+      const lineButton =
+        item.url
+          ? `
+            <a
+              class="line-link"
+              href="${escAttr(item.url)}"
+              target="_blank"
+              rel="noopener noreferrer"
+              onclick="event.stopPropagation()"
             >
+              LINE
+            </a>
+          `
+          : `
+            <span class="line-link disabled">
+              無連結
+            </span>
+          `;
 
-            <span class="item-main">
 
-              <span class="item-name">
-                ${esc(item.name)}
-              </span>
+      return `
+        <label class="item">
 
-              <span class="item-shop">
-                ${esc(item.shop)}
-              </span>
+          <input
+            type="checkbox"
+            class="item-check"
+            data-index="${index}"
+            checked
+          >
 
+          <span class="item-main">
+
+            <span class="item-name">
+              ${esc(item.name)}
             </span>
 
+            <span class="item-shop">
+              ${esc(item.shop)}
+            </span>
 
-            ${
-              item.url
-                ? `
-                  <a
-                    class="line-link"
-                    href="${escAttr(item.url)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onclick="event.stopPropagation()"
-                  >
-                    LINE
-                  </a>
-                `
-                : `
-                  <span class="line-link disabled">
-                    無連結
-                  </span>
-                `
-            }
+          </span>
 
-          </label>
-        `;
+          ${lineButton}
 
-      }
-    ).join("");
+        </label>
+      `;
 
+    }).join("");
 }
 
 
@@ -546,13 +466,11 @@ function renderItems() {
 
 function toggleSelectAll() {
 
-  const checks =
-    [
-      ...document.querySelectorAll(
-        ".item-check"
-      )
-    ];
-
+  const checks = [
+    ...document.querySelectorAll(
+      ".item-check"
+    )
+  ];
 
   const button =
     document.querySelector("#selectAll");
@@ -587,7 +505,6 @@ function toggleSelectAll() {
         : "取消全選";
 
   }
-
 }
 
 
@@ -604,94 +521,36 @@ function start() {
     );
 
     return;
-
   }
 
 
   if (running) {
 
     setStatus(
-      "目前已經在抽選中"
+      "目前正在抽選中"
     );
 
     return;
-
   }
 
 
-  /*
-    建立目前店家的商品清單
-  */
-
-  let list = [];
+  const list =
+    getCurrentItems();
 
 
-  DATA.shops.forEach(
-    (shop, shopIndex) => {
+  const checks = [
+    ...document.querySelectorAll(
+      ".item-check"
+    )
+  ];
 
-      if (
-        selectedShop !== "all" &&
-        selectedShop !== shopIndex
-      ) {
-
-        return;
-
-      }
-
-
-      if (!Array.isArray(shop.items)) {
-        return;
-      }
-
-
-      shop.items.forEach(
-        (item, itemIndex) => {
-
-          list.push({
-
-            ...item,
-
-            shop: shop.name,
-
-            shopIndex,
-
-            itemIndex
-
-          });
-
-        }
-      );
-
-    }
-  );
-
-
-  /*
-    取得 checkbox
-  */
-
-  const checks =
-    [
-      ...document.querySelectorAll(
-        ".item-check"
-      )
-    ];
-
-
-  /*
-    建立實際抽選隊列
-  */
 
   queue =
     list.filter(
-      (_, index) =>
-        checks[index]?.checked
+      (_, itemIndex) =>
+        checks[itemIndex]?.checked
     );
 
-
-  /*
-    沒有選任何商品
-  */
 
   if (!queue.length) {
 
@@ -700,54 +559,34 @@ function start() {
     );
 
     return;
-
   }
 
-
-  /*
-    開始
-  */
 
   running = true;
 
   index = 0;
-
 
   document.body.classList.add(
     "running"
   );
 
 
-  /*
-    更新按鈕
-  */
-
   updateButtons();
-
-
-  /*
-    顯示狀態
-  */
-
-  setStatus(
-    `準備開始，共 ${queue.length} 個品項`
-  );
-
 
   updateProgress();
 
 
-  /*
-    直接開第一個
-  */
+  setStatus(
+    "準備開啟第一個 LINE 抽選"
+  );
+
 
   openCurrent();
-
 }
 
 
 /* =========================================================
-   開啟目前商品
+   開啟目前品項
 ========================================================= */
 
 function openCurrent() {
@@ -757,28 +596,16 @@ function openCurrent() {
   }
 
 
-  /*
-    全部完成
-  */
-
   if (index >= queue.length) {
 
     finish();
 
     return;
-
   }
 
 
   const item =
     queue[index];
-
-
-  /*
-    更新畫面
-  */
-
-  updateProgress();
 
 
   const current =
@@ -793,32 +620,29 @@ function openCurrent() {
   }
 
 
+  updateProgress();
+
+
   setStatus(
-    `準備開啟 ${item.shop}：${item.name}`
+    "正在開啟 " +
+    item.shop +
+    "｜" +
+    item.name
   );
 
 
   /*
-    URL 檢查
+    沒有 LINE URL
   */
 
   if (!item.url) {
 
     setStatus(
-      `${item.name} 沒有 LINE 連結`
+      item.name +
+      " 沒有 LINE 連結"
     );
 
-
-    /*
-      沒有 URL 就跳過
-    */
-
-    index++;
-
-    updateButtons();
-
     return;
-
   }
 
 
@@ -840,7 +664,7 @@ function openCurrent() {
   } catch (error) {
 
     console.error(
-      "window.open 失敗：",
+      "LINE 開啟失敗：",
       error
     );
 
@@ -848,45 +672,35 @@ function openCurrent() {
 
 
   /*
-    Popup 被阻擋
+    Popup 被瀏覽器阻擋
   */
 
   if (!popup) {
 
     setStatus(
-      "瀏覽器阻擋了新分頁"
+      "瀏覽器阻擋了 LINE 新分頁"
     );
-
 
     alert(
       "瀏覽器阻擋了 LINE 新分頁。\n\n" +
-      "請允許這個網站的「彈出式視窗」後再試一次。"
+      "請允許此網站的彈出式視窗，" +
+      "再重新按一次「開始抽選」。"
     );
 
-
     return;
-
   }
 
 
-  /*
-    開成功
-  */
-
   setStatus(
-    `已開啟：${item.shop}｜${item.name}`
+    "已開啟 " +
+    item.shop +
+    "｜" +
+    item.name +
+    "，抽完後回來按「下一個」"
   );
 
 
-  /*
-    這裡不自動跳下一個
-
-    使用者抽完後
-    回到網站按「下一個」
-  */
-
   updateButtons();
-
 }
 
 
@@ -899,23 +713,22 @@ function next() {
   if (!running) {
 
     setStatus(
-      "目前沒有正在進行的抽選"
+      "目前沒有進行中的抽選"
     );
 
     return;
-
   }
 
 
   /*
-    前進一項
+    前進到下一個
   */
 
   index++;
 
 
   /*
-    全部完成
+    已經全部完成
   */
 
   if (index >= queue.length) {
@@ -923,16 +736,14 @@ function next() {
     finish();
 
     return;
-
   }
 
 
   /*
-    開下一個
+    開啟下一個
   */
 
   openCurrent();
-
 }
 
 
@@ -945,16 +756,14 @@ function stop() {
   if (!running) {
 
     setStatus(
-      "目前沒有正在進行的抽選"
+      "目前沒有進行中的抽選"
     );
 
     return;
-
   }
 
 
   running = false;
-
 
   document.body.classList.remove(
     "running"
@@ -979,7 +788,6 @@ function stop() {
 
 
   updateButtons();
-
 }
 
 
@@ -990,7 +798,6 @@ function stop() {
 function finish() {
 
   running = false;
-
 
   document.body.classList.remove(
     "running"
@@ -1027,12 +834,11 @@ function finish() {
 
 
   updateButtons();
-
 }
 
 
 /* =========================================================
-   進度
+   更新進度
 ========================================================= */
 
 function updateProgress() {
@@ -1052,25 +858,16 @@ function updateProgress() {
       "0 / 0";
 
     return;
-
   }
 
 
-  const number =
-    Math.min(
-      index + 1,
-      queue.length
-    );
-
-
   progress.textContent =
-    `${number} / ${queue.length}`;
-
+    `${index + 1} / ${queue.length}`;
 }
 
 
 /* =========================================================
-   按鈕狀態
+   更新按鈕
 ========================================================= */
 
 function updateButtons() {
@@ -1078,14 +875,18 @@ function updateButtons() {
   const startBtn =
     document.querySelector("#start");
 
-
   const nextBtn =
     document.querySelector("#next");
-
 
   const stopBtn =
     document.querySelector("#stop");
 
+
+  /*
+    開始：
+
+    抽選中不能重新開始
+  */
 
   if (startBtn) {
 
@@ -1095,16 +896,14 @@ function updateButtons() {
   }
 
 
+  /*
+    下一個：
+
+    抽選中
+    且目前還有下一項
+  */
+
   if (nextBtn) {
-
-    /*
-      只有：
-
-      正在抽選
-      且還有下一個
-
-      才能按
-    */
 
     nextBtn.disabled =
       !running ||
@@ -1113,18 +912,23 @@ function updateButtons() {
   }
 
 
+  /*
+    停止：
+
+    沒有抽選時不能按
+  */
+
   if (stopBtn) {
 
     stopBtn.disabled =
       !running;
 
   }
-
 }
 
 
 /* =========================================================
-   狀態文字
+   狀態
 ========================================================= */
 
 function setStatus(text) {
@@ -1143,7 +947,6 @@ function setStatus(text) {
       <span class="dot"></span>
       ${esc(text)}
     `;
-
 }
 
 
@@ -1160,35 +963,30 @@ function esc(value) {
     character => {
 
       return {
-
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#39;"
-
       }[character];
 
     }
   );
-
 }
 
 
 /* =========================================================
-   Attribute Escape
+   URL / Attribute Escape
 ========================================================= */
 
 function escAttr(value) {
 
   return esc(value);
-
 }
 
 
 /* =========================================================
-   提供給 HTML onclick 使用
+   給 HTML onclick 使用
 ========================================================= */
 
 window.chooseShop = chooseShop;
-```
