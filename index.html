@@ -2,108 +2,155 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827">
-<title>台南 Funbox 自動抽選</title>
-<link rel="stylesheet" href="assets/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+
+  <title>台南 Funbox 自動抽選</title>
+
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 
 <body>
 
-<header class="hero">
-  <div class="hero-inner">
-    <div class="eyebrow">FUNBOX · TAINAN</div>
-    <h1>台南 Funbox<br>自動抽選</h1>
-    <p>選擇店家與抽選品項，依序進行 LINE 抽選</p>
-  </div>
-</header>
+  <!-- 頁首 -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">FUNBOX · TAINAN</div>
 
-<main>
+      <h1>
+        台南 Funbox<br>
+        自動抽選
+      </h1>
 
-<!-- 選擇店家 -->
-<section class="card">
-  <div class="section-title">
-    <div>
-      <span class="kicker">SHOPS</span>
-      <h2>選擇店家</h2>
+      <p>選擇店家與抽選品項，依序進行 LINE 抽選</p>
     </div>
-  </div>
-
-  <div id="shops" class="shop-grid"></div>
-</section>
+  </header>
 
 
-<!-- 抽選品項 -->
-<section class="card">
-  <div class="section-title">
-    <div>
-      <span class="kicker">ITEMS</span>
-      <h2>抽選品項</h2>
-    </div>
+  <main>
 
-    <button id="selectAll" class="text-btn">全選</button>
-  </div>
+    <!-- =========================
+         選擇店家
+    ========================== -->
+    <section class="card">
 
-  <div id="items" class="simple-items"></div>
-</section>
+      <div class="section-title">
+        <div>
+          <span class="kicker">SHOPS</span>
+          <h2>選擇店家</h2>
+        </div>
+      </div>
 
+      <div id="shops" class="shop-grid"></div>
 
-<!-- 自動抽選 -->
-<section class="control card">
-
-  <div class="section-title">
-    <div>
-      <span class="kicker">AUTO DRAW</span>
-      <h2>自動抽選</h2>
-    </div>
-  </div>
-
-  <div class="progress-row">
-
-    <div>
-      <span class="muted">目前進度</span>
-      <strong id="progress">0 / 0</strong>
-    </div>
-
-    <div>
-      <span class="muted">目前項目</span>
-      <strong id="current">尚未開始</strong>
-    </div>
-
-  </div>
-
-  <div class="status" id="status">
-    <span class="dot"></span>
-    待機中
-  </div>
-
-  <div class="actions">
-    <button id="start" class="primary">
-      ▶ 開始自動抽選
-    </button>
-
-    <button id="stop" class="secondary">
-      ■ 停止
-    </button>
-  </div>
-
-  <p class="hint">
-    系統會依序開啟 LINE 抽選連結。
-    LINE App 內的抽選操作需搭配手機端自動化完成。
-  </p>
-
-</section>
-
-</main>
+    </section>
 
 
-<footer>
-  資料來源可由後端自動同步 Facebook 公告 · GitHub Pages 前端
-</footer>
+    <!-- =========================
+         抽選品項
+    ========================== -->
+    <section class="card">
+
+      <div class="section-title">
+        <div>
+          <span class="kicker">ITEMS</span>
+          <h2>抽選品項</h2>
+        </div>
+
+        <button
+          id="selectAll"
+          class="text-btn"
+          type="button">
+          全選
+        </button>
+      </div>
+
+      <div id="items" class="simple-items"></div>
+
+    </section>
 
 
-<script src="assets/app.js"></script>
+    <!-- =========================
+         自動抽選
+    ========================== -->
+    <section class="control card">
+
+      <div class="section-title">
+        <div>
+          <span class="kicker">AUTO DRAW</span>
+          <h2>自動抽選</h2>
+        </div>
+      </div>
+
+
+      <!-- 進度 -->
+      <div class="progress-row">
+
+        <div>
+          <span class="muted">目前進度</span>
+          <strong id="progress">0 / 0</strong>
+        </div>
+
+        <div>
+          <span class="muted">目前項目</span>
+          <strong id="current">尚未開始</strong>
+        </div>
+
+      </div>
+
+
+      <!-- 狀態 -->
+      <div
+        class="status"
+        id="status">
+
+        <span class="dot"></span>
+
+        <span>待機中</span>
+
+      </div>
+
+
+      <!-- 按鈕 -->
+      <div class="actions">
+
+        <button
+          id="start"
+          class="primary"
+          type="button">
+          ▶ 開始自動抽選
+        </button>
+
+        <button
+          id="stop"
+          class="secondary"
+          type="button">
+          ■ 停止
+        </button>
+
+      </div>
+
+
+      <!-- 提示 -->
+      <p class="hint">
+        系統會依序開啟 LINE 抽選連結。
+        LINE App 內的抽選操作需搭配手機端自動化完成。
+      </p>
+
+    </section>
+
+  </main>
+
+
+  <!-- 頁尾 -->
+  <footer>
+    資料來源可由後端自動同步 Facebook 公告 · GitHub Pages 前端
+  </footer>
+
+
+  <!-- JavaScript -->
+  <script src="assets/app.js"></script>
 
 </body>
 </html>
